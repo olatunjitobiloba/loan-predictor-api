@@ -1,0 +1,25 @@
+{% extends "layout.html"%}
+{% block content %}
+    <div class="content-section">
+        <h1>Welcome to Loan Predictor API</h1>
+        <p class="lead">A Flask-based API for loan prediction and validation.</p>
+        <hr>
+        <h3>Getting Started</h3>
+        <p>Use the API endpoints to predict and validate loan applications:</p>
+        <ul>
+            <li><strong>POST /predict</strong> - Submit loan application data and get prediction</li>
+            <li><strong>POST /validate-loan</strong> - Validate loan application data</li>
+            <li><strong>GET /health</strong> - Check API health status</li>
+            <li><strong>GET /request-info</strong> - View request metadata</li>
+        </ul>
+        <h3>Example Request</h3>
+        <pre class="bg-light p-3 rounded"><code>POST /predict
+Content-Type: application/json
+
+{
+  "age": 35,
+  "income": 50000,
+  "loan_amount": 20000
+}</code></pre>
+    </div>
+{% endblock content %}
