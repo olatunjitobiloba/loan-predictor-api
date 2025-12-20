@@ -161,4 +161,3 @@ curl -X POST http://localhost:5000/predict \
   -H "Content-Type: application/json" \
   -d '{"age": 35, "income": 50000, "loan_amount": 20000}'
 ```
-
