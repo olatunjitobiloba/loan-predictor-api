@@ -1,0 +1,5 @@
+Train Dataset Shape: (614, 14)
+Test Dataset Shape: (367, 13)
+Total Missing Values (Train): 149
+Total Missing Values (Test): 84
+Columns: Loan_ID, Gender, Married, Dependents, Education, Self_Employed, ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term, Credit_History, Property_Area, Loan_Status, count
