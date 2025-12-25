@@ -6,8 +6,8 @@ Machine Learning API for predicting loan approval.
 
 - [x] Day 1: Flask setup + basic routes
 - [x] Day 2: POST endpoint + error handling
-- [ ] Day 3: Data loading
-- [ ] Day 4: Data visualization
+- [x] Day 3: Data loading
+- [x] Day 4: Data visualization
 - [ ] Day 5: ML model training
 
 ## Current Features
