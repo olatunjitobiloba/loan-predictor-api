@@ -8,7 +8,7 @@ Machine Learning API for predicting loan approval.
 - [x] Day 2: POST endpoint + error handling
 - [x] Day 3: Data loading
 - [x] Day 4: Data visualization
-- [ ] Day 5: ML model training
+- [x] Day 5: ML model training
 
 ## Current Features
 
