@@ -1,25 +1,53 @@
 # Loan Predictor API
 
-Machine Learning API for predicting loan approval.
+Machine Learning API for predicting loan approval using Random Forest classifier.
 
-## Progress
+## 🎯 Project Overview
 
-- [x] Day 1: Flask setup + basic routes
-- [x] Day 2: POST endpoint + error handling
-- [x] Day 3: Data loading
-- [x] Day 4: Data visualization
-- [x] Day 5: ML model training
+This project predicts whether a loan application will be approved based on applicant information such as income, credit history, and loan amount. Built as a RESTful API with Flask, it demonstrates end-to-end ML deployment from data preprocessing to model serving.
 
-## Current Features
+**Current Model Accuracy: 88.62%**
+
+## ✨ Features
 
 - ✅ RESTful API with Flask
 - ✅ JSON request/response handling
-- ✅ Error handling with detailed validation
+- ✅ Comprehensive error handling with detailed validation
 - ✅ Health check endpoint
-- ✅ Web interface with Bootstrap
-- ⏳ ML model (coming soon)
+- ✅ Web interface with Bootstrap 5
+- ✅ Random Forest ML model (88.62% accuracy)
+- ✅ Data preprocessing pipeline
+- ✅ Exploratory Data Analysis (EDA) with visualizations
+- ✅ Feature engineering notebooks
+- ⏳ Database integration (coming soon)
+- ⏳ Production deployment (coming soon)
 
-## API Endpoints
+## 🚀 Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/olatunjitobiloba1/loan-predictor-api
+cd loan-predictor-api
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python app.py
+```
+
+Visit the web interface at `http://localhost:5000`
+
+## 📊 Model Performance
+
+| Metric | Score |
+|--------|-------|
+| Accuracy | 88.62% |
+| Precision | 89%   |
+| Recall | 95% |
+| F1-Score | 92% |
+
+## 🔌 API Endpoints
 
 ### GET /
 Returns the home page with API documentation.
@@ -47,14 +75,16 @@ Health check endpoint.
 ```
 
 ### POST /predict
-Predict loan approval (dummy predictions for now).
+Predict loan approval based on applicant data.
 
 **Request:**
 ```json
 {
   "age": 35,
   "income": 50000,
-  "loan_amount": 20000
+  "loan_amount": 20000,
+  "credit_history": 1,
+  "employment_years": 5
 }
 ```
 
@@ -64,11 +94,13 @@ Predict loan approval (dummy predictions for now).
   "received_data": {
     "age": 35,
     "income": 50000,
-    "loan_amount": 20000
+    "loan_amount": 20000,
+    "credit_history": 1,
+    "employment_years": 5
   },
   "prediction": "approved",
   "confidence": 0.85,
-  "message": "This is a dummy prediction. ML model coming soon!"
+  "message": "Loan application processed successfully"
 }
 ```
 
@@ -83,7 +115,7 @@ Predict loan approval (dummy predictions for now).
 ```
 
 ### POST /validate-loan
-Validate loan application data.
+Validate loan application data before prediction.
 
 **Request:**
 ```json
@@ -107,57 +139,146 @@ Validate loan application data.
 }
 ```
 
-## How to Run
+## 🛠️ Tech Stack
 
-1. Install dependencies:
-```bash
-pip install flask
-```
+- **Backend:** Flask, Python 3.9+
+- **ML:** scikit-learn, pandas, numpy
+- **Visualization:** matplotlib, seaborn
+- **Frontend:** Bootstrap 5, Jinja2
+- **Development:** Jupyter Notebooks
+- **Testing:** pytest (coming soon)
+- **Deployment:** Render (coming soon)
 
-2. Run the application:
-```bash
-python app.py
-```
-
-3. Visit the web interface:
-```
-http://localhost:5000
-```
-
-4. Test API endpoints:
-- Use Postman or curl to test POST endpoints
-- See `POSTMAN_TESTING_GUIDE.md` for detailed testing instructions
-
-## Tech Stack
-
-- **Python** 3.9+
-- **Flask** - Web framework
-- **Bootstrap 5** - Frontend styling
-- **Jinja2** - Template engine
-
-(More coming soon...)
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 loan-predictor-api/
-├── app.py                 # Main Flask application
-├── templates/             # HTML templates
-│   ├── layout.html        # Base template
-│   ├── home.html          # Home page
-│   └── about.html         # About page
-├── static/                # Static files
-│   └── main.css           # Custom styles
-└── README.md              # This file
+├── __pycache__/              # Python cache files
+├── cursor/                   # Cursor IDE files
+├── .venv/                    # Virtual environment
+├── data/                     # Datasets
+│   ├── data_summary.txt
+│   ├── test_predictions.csv
+│   ├── test_Y3wMUE5_7gLdaTN.csv
+│   └── train_u6lujuX_CVtuZ9i.csv
+├── models/                   # Saved models & preprocessors
+│   ├── feature_names.txt
+│   ├── loan_model_v1.pkl
+│   ├── loan_model_v2.pkl
+│   ├── model_info.json
+│   ├── preprocessor.pkl
+│   └── submission.csv
+├── notebooks/                # Jupyter notebooks for analysis
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_model_training.ipynb
+│   ├── 03_feature_engineering.ipynb
+│   └── explore_data.ipynb
+├── screenshots/              # API testing screenshots
+│   ├── API_GET_RESPONSE_IN_POSTMAN.png
+│   ├── API_POST_RESPONSE_IN_POSTMAN.png
+│   ├── confusion_matrix.png
+│   └── feature_importance_chart.png
+├── static/                   # Static files (CSS, JS)
+│   └── main.css
+├── templates/                # HTML templates
+│   ├── about.html
+│   ├── home.html
+│   └── layout.html
+├── visualizations/           # EDA plots
+│   └── eda_plots/
+│       ├── 01_missing_values_analysis.png
+│       ├── 02_target_variable_distribution.png
+│       ├── 03_applicant_income_distribution.png
+│       ├── 04_loan_amount_distribution.png
+│       ├── 05_income_distribution_combined.png
+│       ├── 06_credit_history_impact.png
+│       ├── 07_property_area_approval.png
+│       ├── 08_education_income_boxplot.png
+│       ├── 09_loan_vs_income_scatter.png
+│       ├── 10_categorical_vs_loan_status.png
+│       ├── 11_correlation_heatmap.png
+│       ├── 12_outlier_detection.png
+│       └── 13_loan_income_ratio.png
+├── .gitattributes
+├── .gitignore
+├── app.py                    # Main Flask application
+├── preprocess.py             # Data preprocessing pipeline
+├── train_model_v3.py         # Model training script
+├── requirements.txt          # Dependencies
+└── README.md                 # This file
 ```
 
-## Testing
+## 📈 Development Progress
 
-See `POSTMAN_TESTING_GUIDE.md` for comprehensive testing instructions.
+- [x] **Day 1:** Flask setup + basic routes
+- [x] **Day 2:** POST endpoint + error handling
+- [x] **Day 3:** Data loading & exploration
+- [x] **Day 4:** Data visualization & EDA (13 plots)
+- [x] **Day 5:** ML model training (Random Forest)
+- [x] **Day 6:** Model optimization (79.83% → 88.62% accuracy)
+- [ ] **Week 2:** Integration, testing, deployment
 
-Quick test with curl:
+## 🧪 Testing
+
+Test the API using the screenshots in the `screenshots/` folder as reference.
+
+**Quick test with curl:**
 ```bash
 curl -X POST http://localhost:5000/predict \
   -H "Content-Type: application/json" \
-  -d '{"age": 35, "income": 50000, "loan_amount": 20000}'
+  -d '{"age": 35, "income": 50000, "loan_amount": 20000, "credit_history": 1, "employment_years": 5}'
 ```
+
+**Test with Postman:**
+- Import the endpoints from the API documentation
+- See screenshots in `screenshots/` folder for expected responses
+
+## 📊 Data Analysis
+
+The project includes comprehensive EDA with 13 visualizations:
+- Missing values analysis
+- Target variable distribution
+- Income and loan amount distributions
+- Credit history impact on approval
+- Property area analysis
+- Correlation heatmap
+- Outlier detection
+- And more...
+
+All visualizations are available in `visualizations/eda_plots/`
+
+## 🎓 What I Learned
+
+1. **Feature engineering** can improve accuracy by 8-10%
+2. **Credit history** is the strongest predictor of loan approval
+3. Proper **preprocessing** is crucial for model performance
+4. Real-world ML is **80% data work, 20% modeling**
+5. **API design** matters for usability and maintainability
+6. **Iterative improvement**: v1 (79.83%) → v2 (88.62%)
+
+## 🔮 Future Improvements
+
+- [ ] Add database integration (PostgreSQL/MongoDB)
+- [ ] Implement user authentication
+- [ ] Add model versioning and A/B testing
+- [ ] Deploy to production (Render/AWS)
+- [ ] Add comprehensive test suite (pytest)
+- [ ] Create Docker containerization
+- [ ] Add API rate limiting
+- [ ] Implement logging and monitoring
+- [ ] Create CI/CD pipeline
+
+## 📫 Contact
+
+**Olatunji Oluwatobiloba**
+- GitHub: [@olatunjitobiloba](https://github.com/olatunjitobiloba)
+- LinkedIn: [@olatunjitobiloba](https://www.linkedin.com/in/olatunji-oluwatobiloba-186659291/)
+- Email: [olatunjitobiloba05@gmail.com](mailto:olatunjitobiloba05@gmail.com)
+
+## 📝 License
+
+MIT License
+
+---
+
+**Built with ❤️ in 6 days as part of my journey to become an ML Engineer.**
