@@ -1,220 +1,131 @@
-# Loan Predictor API
+# 🤖 Loan Prediction API
 
-A production-ready machine learning API for predicting loan approval using Random Forest classification. Built with Flask, featuring comprehensive data validation, feature engineering, and a web interface.
+Machine Learning API for predicting loan approval using Random Forest (88.62% accuracy).
 
-## 🎯 Project Overview
+## 🚀 Live Demo
 
-This project implements an end-to-end machine learning solution for loan approval prediction. It includes:
-- A trained Random Forest model with **88.62% accuracy**
-- RESTful API for making predictions
-- Comprehensive input validation
-- Web interface for easy interaction
-- Complete data preprocessing and feature engineering pipeline
-- Exploratory data analysis notebooks
-- Unit tests and validation test suite
+**Production URL:** Deploy to Render by following the [Deployment](#-deployment-render) section below.
 
-**Current Model Performance: 88.62% Accuracy | 89% Precision | 95.3% Recall | 92% F1-Score**
+**Local Development:** `http://localhost:5000`
 
-## ✨ Key Features
+## 📊 Features
 
-- ✅ **RESTful API** - Flask-based API with proper error handling
-- ✅ **Input Validation** - Comprehensive validation with detailed error messages
-- ✅ **Feature Engineering** - 20 engineered features including income ratios, EMI calculations, and log transformations
-- ✅ **Web Interface** - Bootstrap 5 responsive web UI
-- ✅ **Data Preprocessing** - Full preprocessing pipeline with encoding and normalization
-- ✅ **Model Serving** - Random Forest model with optimized hyperparameters
-- ✅ **Health Checks** - Endpoint monitoring and API status
-- ✅ **EDA & Notebooks** - Exploratory analysis and model training notebooks
-- ✅ **Test Suite** - Comprehensive validation and integration tests
+- ✅ 88.62% accurate ML predictions
+- ✅ Comprehensive input validation
+- ✅ Database storage (SQLite dev, PostgreSQL prod)
+- ✅ Prediction history & analytics
+- ✅ 83% test coverage
+- ✅ RESTful API design
+- ✅ Production-ready deployment
+- ✅ Feature engineering (20+ engineered features)
+- ✅ Web interface with Bootstrap 5
+- ✅ Complete data preprocessing pipeline
 
-## 📋 Table of Contents
+## 🛠️ Tech Stack
 
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [API Documentation](#api-documentation)
-- [Input Validation](#input-validation)
-- [Model Details](#model-details)
-- [Feature Engineering](#feature-engineering)
-- [Usage Examples](#usage-examples)
-- [Testing](#testing)
-- [Data Files](#data-files)
-- [Technical Stack](#technical-stack)
-- [Development](#development)
-
-## 🚀 Installation
-
-### Prerequisites
-- Python 3.8+
-- pip or conda
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/olatunjitobiloba1/loan-predictor-api
-cd loan-predictor-api
-
-# Create virtual environment (optional but recommended)
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### Requirements
-The project uses the following dependencies:
-- Flask 3.1.2 - Web framework
-- scikit-learn 1.8.0 - Machine learning
-- pandas 2.3.3 - Data manipulation
-- numpy 2.4.0 - Numerical computing
-- joblib 1.5.3 - Model serialization
-
-See [requirements.txt](requirements.txt) for the complete list.
-
-## 🚀 Quick Start
-
-```bash
-# Run the application
-python app.py
-
-# Access the web interface
-# Open browser to http://localhost:5000
-```
-
-The API will be available at `http://localhost:5000`
+- **Backend:** Flask 3.1.2, Python 3.11
+- **ML:** scikit-learn, pandas, numpy
+- **Database:** SQLite (dev), PostgreSQL (prod)
+- **Testing:** pytest (83% coverage)
+- **Deployment:** Render
+- **Server:** Gunicorn
+- **ORM:** SQLAlchemy
 
 ## 📁 Project Structure
 
 ```
 loan-predictor-api/
-├── app.py                    # Main Flask application (v1)
-├── app_v2.py                 # Flask app with enhanced validation (v2)
-├── app_v2_improved.py        # Improved version with better error handling (v2+)
-├── app_v3.py                 # Latest version with additional features (v3)
-├── preprocess.py             # Data preprocessing pipeline
-├── validators.py             # Input validation logic
-├── train_model_v3.py         # Model training script
-├── test_api.py               # API integration tests
-├── test_validation.py        # Validation test suite
-├── requirements.txt          # Project dependencies
-├── README.md                 # This file
-│
-├── models/
-│   ├── model_info.json       # Model metadata and performance metrics
-│   ├── feature_names.txt     # Feature names used by the model
-│   └── submission.csv        # Model predictions on test set
-│
-├── data/
-│   ├── train_u6lujuX_CVtuZ9i.csv    # Training dataset
-│   ├── test_Y3wMUE5_7gLdaTN.csv     # Test dataset
-│   ├── test_predictions.csv          # Model predictions on test data
-│   └── data_summary.txt              # Data summary statistics
-│
-├── notebooks/
-│   ├── 01_data_exploration.ipynb     # EDA and data analysis
-│   ├── 02_model_training.ipynb       # Model training and evaluation
-│   ├── 03_feature_engineering.ipynb  # Feature engineering techniques
-│   └── explore_data.ipynb            # Additional data exploration
-│
-├── templates/
-│   ├── home.html             # Home page template
-│   ├── about.html            # About page template
-│   └── layout.html           # Base layout template
-│
-├── static/
-│   └── main.css              # Stylesheet
-│
-├── visualizations/
-│   └── eda_plots/            # Generated EDA visualizations
-│
-└── screenshots/              # Screenshots of API usage
-    ├── API_GET_RESPONSE_IN_POSTMAN/
-    └── API_POST_RESPONSE IN POSTMAN/
+├── app_v4.py                      # Main Flask application (latest)
+├── app_v3.py                      # Previous version
+├── app_v2.py                      # Version 2
+├── app.py                         # Version 1
+├── validators.py                  # Input validation logic
+├── database.py                    # SQLAlchemy models & queries
+├── preprocess.py                  # Data preprocessing pipeline
+├── train_model_v3.py              # Model training script
+├── models/                        # Trained ML models
+│   ├── loan_model_v2.pkl         # Random Forest model (88.62%)
+│   ├── feature_names.txt         # Feature list
+│   └── model_info.json           # Model metadata
+├── data/                          # Datasets
+│   ├── train_u6lujuX_CVtuZ9i.csv # Training data
+│   ├── test_Y3wMUE5_7gLdaTN.csv  # Test data
+│   └── data_summary.txt          # Data description
+├── notebooks/                     # Jupyter notebooks
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_model_training.ipynb
+│   └── 03_feature_engineering.ipynb
+├── tests/                         # Test suite (55+ tests)
+│   ├── test_api.py               # API endpoint tests
+│   ├── test_database.py          # Database tests
+│   ├── test_validators.py        # Validation tests
+│   └── conftest.py               # pytest configuration
+├── templates/                     # Flask templates
+│   ├── home.html                 # Home page
+│   ├── about.html                # About page
+│   └── layout.html               # Base layout
+├── static/                        # Static files
+│   └── main.css                  # Stylesheet
+├── requirements.txt               # Python dependencies
+├── Procfile                       # Render deployment config
+├── runtime.txt                    # Python version specification
+├── pytest.ini                     # pytest configuration
+├── .env.example                   # Environment variables template
+└── README.md                      # This file
 ```
 
-## 📊 Model Performance
+## 🚀 Quick Start (Local Development)
 
-| Metric | Score |
-|--------|-------|
-| **Accuracy** | 88.62% |
-| **Precision** | 89.01% |
-| **Recall** | 95.29% |
-| **F1-Score** | 92.05% |
-| **Cross-Validation Mean** | 78.41% |
-| **Cross-Validation Std** | 2.40% |
+### Prerequisites
+- Python 3.11+
+- pip
 
-### Model Configuration
-- **Algorithm**: Random Forest Classifier
-- **Number of Estimators**: 200
-- **Max Depth**: 15
-- **Min Samples Split**: 5
-- **Min Samples Leaf**: 2
-- **Training Samples**: 491
-- **Validation Samples**: 123
+### Installation
 
-## 🔌 API Endpoints
+```bash
+# Clone repository
+git clone https://github.com/yourusername/loan-predictor-api.git
+cd loan-predictor-api
 
-### GET /
-Home page with web interface.
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-**Response**: HTML page with prediction form
-
----
-
-### GET /api
-API information endpoint.
-
-**Response:**
-```json
-{
-  "message": "Loan Predictor API",
-  "version": "1.0",
-  "status": "running"
-}
+# Install dependencies
+pip install -r requirements.txt
 ```
 
----
+### Run Application
 
-### GET /health
-Health check endpoint for monitoring.
+```bash
+# Start the Flask app
+python app_v4.py
 
-**Response:**
-```json
-{
-  "status": "healthy"
-}
+# Access the application
+# Open browser to http://localhost:5000
 ```
 
----
+## 📡 API Endpoints
 
-### GET /about
-About page with project information.
-
-**Response**: HTML page with project details
-
----
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Home page |
+| GET | `/api` | API information & statistics |
+| GET | `/health` | Health check |
+| GET | `/about` | About page |
+| POST | `/predict` | Make loan prediction |
+| POST | `/validate-loan` | Validate loan data |
+| GET | `/history` | Recent predictions |
+| GET | `/history/<id>` | Specific prediction |
+| GET | `/statistics` | Overall statistics |
+| GET | `/analytics` | Detailed analytics |
+| GET | `/model-info` | Model details |
+| GET | `/validation-rules` | Input validation rules |
 
 ### POST /predict
 Make a loan approval prediction.
 
-**Required Fields:**
-- `ApplicantIncome` (number) - Applicant's income
-
-**Optional Fields:**
-- `CoapplicantIncome` (number) - Co-applicant's income
-- `LoanAmount` (number) - Loan amount requested
-- `Loan_Amount_Term` (number) - Term of the loan (in months)
-- `Credit_History` (0 or 1) - Credit history availability
-- `Gender` (string) - "Male" or "Female"
-- `Married` (string) - "Yes" or "No"
-- `Dependents` (string) - "0", "1", "2", or "3+"
-- `Education` (string) - "Graduate" or "Not Graduate"
-- `Self_Employed` (string) - "Yes" or "No"
-- `Property_Area` (string) - "Urban", "Semiurban", or "Rural"
-
-**Request Example:**
+**Request:**
 ```json
 {
   "ApplicantIncome": 5000,
@@ -231,28 +142,123 @@ Make a loan approval prediction.
 }
 ```
 
-**Success Response (200):**
+**Response:**
 ```json
 {
+  "success": true,
   "prediction": "Approved",
+  "prediction_code": 1,
   "confidence": 0.89,
-  "received_data": {...},
-  "message": "Prediction successful"
+  "probability": {
+    "rejected": 0.11,
+    "approved": 0.89
+  },
+  "prediction_id": 123,
+  "model_info": {
+    "accuracy": 0.8862,
+    "version": "2.0"
+  },
+  "timestamp": "2025-12-31T10:00:00"
 }
 ```
 
-**Error Response (400):**
+### POST /validate-loan
+Validate loan application data before prediction.
+
+**Request:**
 ```json
 {
-  "error": "Validation Error",
-  "message": "ApplicantIncome must be positive",
-  "received_data": {...}
+  "ApplicantIncome": 5000,
+  "CoapplicantIncome": 1500,
+  "LoanAmount": 150,
+  "Gender": "Male"
 }
 ```
+
+**Response:**
+```json
+{
+  "valid": true,
+  "message": "Data is valid and ready for prediction",
+  "timestamp": "2025-12-31T10:00:00",
+  "input_data": {...}
+}
+```
+
+### GET /history
+Recent prediction history.
+
+**Query Parameters:**
+- `limit` (optional, default=10, max=100) - Number of records
+
+**Response:**
+```json
+{
+  "count": 10,
+  "predictions": [
+    {
+      "id": 1,
+      "prediction": "Approved",
+      "confidence": 0.89,
+      "timestamp": "2025-12-31T10:00:00"
+    }
+  ]
+}
+```
+
+### GET /statistics
+Overall API statistics.
+
+**Response:**
+```json
+{
+  "total_predictions": 150,
+  "approval_rate": 0.68,
+  "average_confidence": 0.82,
+  "predictions_today": 12
+}
+```
+
+### GET /analytics
+Detailed analytics and trends.
+
+**Response:**
+```json
+{
+  "overall": {...},
+  "last_24_hours": {
+    "total": 25,
+    "approved": 17,
+    "rejected": 8,
+    "approval_rate": "68.00%"
+  },
+  "confidence_analysis": {
+    "avg_confidence_approved": "89.50%",
+    "avg_confidence_rejected": "72.30%"
+  }
+}
+```
+
+## 📊 Model Performance
+
+| Metric | Score |
+|--------|-------|
+| **Accuracy** | 88.62% |
+| **Precision** | 89.01% |
+| **Recall** | 95.29% |
+| **F1-Score** | 92.05% |
+
+### Model Configuration
+- **Algorithm**: Random Forest Classifier
+- **Number of Estimators**: 200
+- **Max Depth**: 15
+- **Min Samples Split**: 5
+- **Min Samples Leaf**: 2
+- **Features**: 20 engineered features
 
 ## ✅ Input Validation
 
-The API includes comprehensive input validation with the following rules:
+The API includes comprehensive validation:
 
 ### Numeric Fields
 - **ApplicantIncome**: Required, range 0-100,000
@@ -268,14 +274,6 @@ The API includes comprehensive input validation with the following rules:
 - **Self_Employed**: "Yes" or "No"
 - **Property_Area**: "Urban", "Semiurban", or "Rural"
 
-### Validation Features
-- Type checking and conversion
-- Range validation
-- Missing field detection
-- Categorical value validation
-- Detailed error messages
-- Field-level error reporting
-
 ## 🔧 Feature Engineering
 
 The model uses 20 engineered features:
@@ -285,11 +283,11 @@ The model uses 20 engineered features:
 2. **CoapplicantIncome** - Co-applicant's income
 3. **LoanAmount** - Loan amount
 4. **Loan_Amount_Term** - Loan term
-5. **TotalIncome** - Sum of applicant and co-applicant income
-6. **Income_Loan_Ratio** - Ratio of total income to loan amount
-7. **Loan_Amount_Per_Term** - Loan amount divided by term length
-8. **EMI** - Equated Monthly Installment (loan payment)
-9. **Balance_Income** - Remaining income after loan payment
+5. **TotalIncome** - Sum of incomes
+6. **Income_Loan_Ratio** - Income to loan ratio
+7. **Loan_Amount_Per_Term** - Loan per term
+8. **EMI** - Equated Monthly Installment
+9. **Balance_Income** - Income after loan payment
 
 ### Log-Transformed Features
 10. **Log_ApplicantIncome** - Log of applicant income
@@ -298,13 +296,139 @@ The model uses 20 engineered features:
 13. **Log_TotalIncome** - Log of total income
 
 ### Encoded Categorical Features
-14. **Gender_Encoded** - Encoded gender (0/1)
-15. **Married_Encoded** - Encoded marital status (0/1)
-16. **Dependents_Encoded** - Encoded number of dependents (0-3)
-17. **Education_Encoded** - Encoded education level (0/1)
-18. **Self_Employed_Encoded** - Encoded employment status (0/1)
-19. **Property_Area_Encoded** - Encoded property area (0/1/2)
-20. **Credit_History** - Credit history availability (0/1)
+14. **Gender_Encoded** - Gender (0/1)
+15. **Married_Encoded** - Marital status (0/1)
+16. **Dependents_Encoded** - Number of dependents
+17. **Education_Encoded** - Education level (0/1)
+18. **Self_Employed_Encoded** - Employment status (0/1)
+19. **Property_Area_Encoded** - Property area (0/1/2)
+20. **Credit_History** - Credit availability (0/1)
+
+## 🧪 Testing
+
+Run test suite:
+
+```bash
+pytest
+```
+
+Run with coverage:
+
+```bash
+pytest --cov=. --cov-report=html
+```
+
+Current coverage: 83%
+
+### Test Files
+- `tests/test_api.py` - API endpoint tests
+- `tests/test_database.py` - Database model tests
+- `tests/test_validators.py` - Validation tests
+
+Run specific test:
+```bash
+pytest tests/test_validators.py -v
+pytest tests/test_api.py::test_predict_endpoint -v
+```
+
+## 🚀 Deployment (Render)
+
+### Prerequisites
+- GitHub account (with code pushed)
+- Render account (https://render.com - free tier available)
+
+### Step-by-Step Deployment
+
+#### 1. Prepare Your Code
+
+```bash
+# Verify Procfile
+cat Procfile
+# Should contain: web: gunicorn app_v4:app
+
+# Verify runtime.txt
+cat runtime.txt
+# Should contain: python-3.11.9
+```
+
+#### 2. Push to GitHub
+
+```bash
+git add .
+git commit -m "Ready for production deployment"
+git push origin main
+```
+
+#### 3. Create Render Web Service
+
+1. Go to https://render.com and sign in
+2. Click "New +" → "Web Service"
+3. Connect your GitHub repository
+4. Configure:
+   - **Name**: loan-predictor-api
+   - **Environment**: Python 3
+   - **Region**: Choose closest
+   - **Branch**: main
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app_v4:app`
+
+#### 4. Add Environment Variables
+
+In Render dashboard → Environment:
+
+```
+SECRET_KEY=your-generated-secret-key-here
+DATABASE_URL=postgresql://...  # (Optional for PostgreSQL)
+```
+
+Generate secret key:
+```bash
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+#### 5. Deploy
+
+1. Click "Create Web Service"
+2. Render builds and deploys automatically
+3. Wait 3-5 minutes for deployment
+4. Your API URL: `https://your-service-name.onrender.com`
+
+#### 6. Verify Deployment
+
+```bash
+# Test health endpoint
+curl https://your-service-name.onrender.com/health
+
+# Test prediction
+curl -X POST https://your-service-name.onrender.com/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ApplicantIncome": 5000,
+    "CoapplicantIncome": 1500,
+    "LoanAmount": 150,
+    "Loan_Amount_Term": 360,
+    "Credit_History": 1,
+    "Gender": "Male",
+    "Married": "Yes",
+    "Education": "Graduate"
+  }'
+```
+
+## 🔐 Environment Variables
+
+### Required for Production
+
+| Variable | Description |
+|----------|-------------|
+| `SECRET_KEY` | Flask secret key |
+| `DATABASE_URL` | Database connection (optional) |
+
+### Local Development (.env)
+
+```bash
+SECRET_KEY=dev-secret-key-change-in-production
+DATABASE_URL=sqlite:///predictions.db
+```
 
 ## 💻 Usage Examples
 
@@ -330,6 +454,9 @@ curl http://localhost:5000/api
 
 # Health check
 curl http://localhost:5000/health
+
+# Get validation rules
+curl http://localhost:5000/validation-rules
 ```
 
 ### Using Python requests
@@ -351,161 +478,44 @@ response = requests.post(url, json=data)
 print(json.dumps(response.json(), indent=2))
 ```
 
-### Using Postman
-
-1. Create a new POST request to `http://localhost:5000/predict`
-2. Set Content-Type to `application/json`
-3. Enter JSON data in the request body
-4. Send the request
-
-Screenshots of API responses are available in the `screenshots/` directory.
-
-## 🧪 Testing
-
-### Run Validation Tests
-
-```bash
-# Start the API first
-python app.py
-
-# In another terminal, run tests
-python test_validation.py
-```
-
-The test suite includes:
-- ✅ Valid complete data
-- ✅ Minimal valid data
-- ✅ Missing required fields
-- ✅ Invalid data types
-- ✅ Negative values
-- ✅ Out of range values
-- ✅ Invalid categorical values
-- ✅ Edge cases
-
-### Run API Integration Tests
-
-```bash
-python test_api.py
-```
-
-## 📊 Data Files
-
-### Training Data
-- **File**: `data/train_u6lujuX_CVtuZ9i.csv`
-- **Size**: 614 samples
-- **Features**: 12 (before engineering)
-- **Target**: Loan_Status
-
-### Test Data
-- **File**: `data/test_Y3wMUE5_7gLdaTN.csv`
-- **Size**: 367 samples
-- **Features**: 11 (no target variable)
-
-### Model Predictions
-- **File**: `data/test_predictions.csv`
-- **Contains**: Test set predictions from the trained model
-
-## 🛠️ Technical Stack
-
-| Component | Technology | Version |
-|-----------|------------|---------|
-| **Web Framework** | Flask | 3.1.2 |
-| **ML Library** | scikit-learn | 1.8.0 |
-| **Data Processing** | pandas | 2.3.3 |
-| **Numerical Computing** | numpy | 2.4.0 |
-| **Model Serialization** | joblib | 1.5.3 |
-| **Frontend** | Bootstrap 5 | HTML/CSS |
-| **Python Version** | 3.8+ | |
-
-## 📓 Notebooks
-
-### 01_data_exploration.ipynb
-Comprehensive exploratory data analysis including:
-- Data summary and statistics
-- Missing value analysis
-- Distribution analysis
-- Correlation analysis
-- Visualization of features
-
-### 02_model_training.ipynb
-Model development and evaluation:
-- Data preprocessing
-- Model training
-- Hyperparameter tuning
-- Cross-validation
-- Performance metrics
-- Model evaluation
-
-### 03_feature_engineering.ipynb
-Feature engineering techniques:
-- Financial ratio calculations
-- Log transformations
-- Categorical encoding
-- Feature scaling
-- Feature importance analysis
-
-## 🔄 Data Preprocessing Pipeline
-
-The preprocessing pipeline handles:
-
-1. **Missing Value Imputation**
-   - Numeric fields: Filled with median
-   - Categorical fields: Filled with mode
-
-2. **Categorical Encoding**
-   - Label encoding for categorical variables
-   - One-hot encoding support
-
-3. **Feature Engineering**
-   - Financial ratios
-   - Log transformations
-   - Income calculations
-   - EMI calculations
-
-4. **Data Normalization**
-   - Standardization of numeric features
-
 ## 📈 Development
 
 ### Running Different API Versions
 
 ```bash
-# Version 1 (Original)
+# Version 1
 python app.py
 
-# Version 2 (Enhanced validation)
+# Version 2
 python app_v2.py
 
-# Version 2+ (Improved error handling)
+# Version 2 Improved
 python app_v2_improved.py
 
-# Version 3 (Latest with additional features)
+# Version 3
 python app_v3.py
+
+# Version 4 (Latest)
+python app_v4.py
 ```
 
 ### Training the Model
-
-To retrain the model:
 
 ```bash
 python train_model_v3.py
 ```
 
-This will:
-1. Load the training data
-2. Preprocess and engineer features
-3. Train the Random Forest model
-4. Evaluate performance
-5. Save the model and metadata
+## 📓 Jupyter Notebooks
+
+- `notebooks/01_data_exploration.ipynb` - EDA
+- `notebooks/02_model_training.ipynb` - Model development
+- `notebooks/03_feature_engineering.ipynb` - Feature creation
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-
 **Port Already in Use**
 ```bash
-# Use a different port
-python -c "from app import app; app.run(port=5001)"
+python -c "from app_v4 import app; app.run(port=5001)"
 ```
 
 **Missing Dependencies**
@@ -513,33 +523,34 @@ python -c "from app import app; app.run(port=5001)"
 pip install -r requirements.txt
 ```
 
-**Model File Not Found**
-Ensure the model file exists in the `models/` directory. Retrain if needed:
+**Model Not Found**
 ```bash
 python train_model_v3.py
 ```
 
 ## 📝 License
 
-This project is provided as-is for educational and demonstration purposes.
+MIT License - Feel free to use this project for educational and commercial purposes.
 
 ## 👤 Author
 
 Created as a comprehensive machine learning project demonstrating:
 - End-to-end ML pipeline
 - REST API development
-- Input validation
-- Model deployment
-- Web interface development
+- Input validation & error handling
+- Production deployment
+- Test-driven development
 
-## 🔗 Related Resources
+## 🔗 Resources
 
-- [scikit-learn Documentation](https://scikit-learn.org/)
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Pandas Documentation](https://pandas.pydata.org/)
+- [scikit-learn](https://scikit-learn.org/)
+- [Flask](https://flask.palletsprojects.com/)
+- [Pandas](https://pandas.pydata.org/)
+- [Render Docs](https://render.com/docs)
 
 ---
 
-**Last Updated**: December 2025
-**Model Version**: 3
-**API Version**: 1.0
+**Last Updated**: December 2025  
+**Model Version**: 3  
+**API Version**: 4.0  
+**Status**: Production Ready ✅

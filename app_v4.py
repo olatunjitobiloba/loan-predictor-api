@@ -393,7 +393,7 @@ def history():
 def get_prediction(prediction_id):
     """Get specific prediction by ID"""
     try:
-        prediction = db.session.get(Prediction, prediction_id)
+        prediction = Prediction.query.get(prediction_id)
 
         if not prediction:
             return jsonify({"error": "Prediction not found"}), 404
@@ -574,5 +574,9 @@ with app.app_context():
         logger.warning("[WARNING] Model failed to load")
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Get port from environment variable (Render provides this)
+    port = int(od.environ.get('PORT', 5000))
+
+    #Run in production mode
+    app.run(host='0.0.0.0', port=port, debug=False)
     
