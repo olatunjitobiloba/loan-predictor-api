@@ -4,16 +4,28 @@ import pandas as pd
 import numpy as np
 import json
 import logging
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from datetime import datetime, timedelta
 from validators import LoanApplicationValidator
 from database import db, init_db, Prediction, get_recent_predictions, get_statistics, update_daily_stats
 
 app = Flask(__name__)
 
-# Configure databasee
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///predictions.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Configure databasee (use environment variable or default to SQLite)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.envirn.get(
+    'DATABASE_URL',
+    'sqlite:///predictions.db'
+    )
 
+# Handle PostgreSQL URL format (Render uses postgresql://, SQLAlchemy needs postgresql+psycopg2://)
+if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace(
+    'postgres://', 'postgresql+psycopg2://', 1
+)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 # Initialize database
 init_db(app)
 
@@ -575,7 +587,7 @@ with app.app_context():
 
 if __name__ == '__main__':
     # Get port from environment variable (Render provides this)
-    port = int(od.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5000))
 
     #Run in production mode
     app.run(host='0.0.0.0', port=port, debug=False)
