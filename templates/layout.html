@@ -1,59 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
-
-    {% if title %}
-        <title>Loan Predictor - {{ title }}</title>
-    {% else %}
-        <title>Loan Predictor</title>
-    {% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='premium-interactive.css') }}">
+    
+    <title>{% if title %}LoanAI - {{ title }}{% else %}LoanAI | Intelligent Loan Prediction{% endif %}</title>
 </head>
 <body>
-    <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-            <div class="container">
-                <a class="navbar-brand mr-4" href="/">Loan Predictor</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarToggle">
-                    <div class="navbar-nav me-auto">
-                        <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-                        <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
-                        <a class="nav-item nav-link" href="/predict">API Docs</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <main role="main" class="container">
-        <div class="row">
-            <div class="col-md-8">
-                {% block content %}{% endblock %}
-            </div>
-            <div class="col-md-4">
-                <div class="content-section">
-                    <h3>API Endpoints</h3>
-                    <p class='text-muted'>Available endpoints:
-                        <ul class="list-unstyled">
-                            <li><a href="/health">/health</a></li>
-                            <li><a href="/predict">/predict</a></li>
-                            <li><a href="/validate-loan">/validate-loan</a></li>
-                            <li><a href="/request-info">/request-info</a></li>
-                        </ul>
-                    </p>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-md navbar-light bg-white sticky-top" style="box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <div class="container">
+            <a class="navbar-brand" href="/" style="font-weight: 700; color: #6366f1;">
+                <i class="fas fa-brain me-2"></i>LoanAI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                    <a class="nav-link" href="/about">About</a>
                 </div>
             </div>
         </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="py-5">
+        {% block content %}{% endblock %}
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 3rem 0; margin-top: 5rem;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>LoanAI</h5>
+                    <p style="color: #cbd5db;">Intelligent loan prediction powered by machine learning</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Features</h5>
+                    <ul style="list-style: none; padding: 0; color: #cbd5db;">
+                        <li><a href="/" style="color: #cbd5db; text-decoration: none;">Fast Predictions</a></li>
+                        <li><a href="/dashboard" style="color: #cbd5db; text-decoration: none;">Analytics</a></li>
+                        <li><a href="/about" style="color: #cbd5db; text-decoration: none;">About</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Legal</h5>
+                    <ul style="list-style: none; padding: 0; color: #cbd5db;">
+                        <li><a href="#" style="color: #cbd5db; text-decoration: none;">Privacy</a></li>
+                        <li><a href="#" style="color: #cbd5db; text-decoration: none;">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; text-align: center; color: #94a3b8;">
+                <p>&copy; 2025 LoanAI. Built with intelligence.</p>
+            </div>
+        </div>
+    </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='premium-interactions.js') }}"></script>
 </body>
 </html>
