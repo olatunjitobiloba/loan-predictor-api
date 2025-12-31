@@ -4,8 +4,8 @@ import json
 # API URL
 BASE_URL = "http://localhost:5000"
 
-def test_prediction(data):
-    """Test the prediction endpoint"""
+def predict_endpoint(data):
+    """Helper function to test the prediction endpoint"""
     url = f"{BASE_URL}/predict"
     headers = {"Content-Type": "application/json"}
 
@@ -22,8 +22,8 @@ def test_prediction(data):
 
     return response.json()
 
-def test_stats():
-    """Test the stats endpoint"""
+def get_stats_endpoint():
+    """Helper function to test the stats endpoint"""
     url = f"{BASE_URL}/stats"
     response = requests.get(url)
     print(f"\n{'='*60}")
@@ -35,7 +35,7 @@ def test_stats():
 # Test cases
 if __name__ == '__main__':
     # Test 1: High income, good credit (minimal fields)
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 10000,
         "CoapplicantIncome": 3000,
         "LoanAmount": 150,
@@ -44,14 +44,14 @@ if __name__ == '__main__':
     })
 
     # Test 2: Low income, bad credit
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 2000,
         "LoanAmount": 300,
         "Credit_History": 0
     })
 
     # Test 3: Medium income, good credit
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 5000,
         "CoapplicantIncome": 2000,
         "LoanAmount": 200,
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     })
 
     # Test 4: Complete data - all fields provided
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 10000,
         "CoapplicantIncome": 3000,
         "LoanAmount": 150,
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         "Property_Area": "Urban"
     })
     # Test 5: Very high income, small loan
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 15000,
         "CoapplicantIncome": 5000,
         "LoanAmount": 100,
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     })
 
     # Test 6: Moderate income, tiny loan
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 6000,
         "CoapplicantIncome": 2000,
         "LoanAmount": 50,
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     })
 
     # Test 7: Try different property area
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 8000,
         "CoapplicantIncome": 4000,
         "LoanAmount": 120,
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     })
 
     # Add this test - using typical approved profile from loan datasets
-    test_prediction({
+    predict_endpoint({
         "ApplicantIncome": 4583,
         "CoapplicantIncome": 1508,
         "LoanAmount": 128,
@@ -133,4 +133,4 @@ if __name__ == '__main__':
     })
 
     # 🎯 Call stats AFTER all predictions
-    test_stats()
+    get_stats_endpoint()

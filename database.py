@@ -3,7 +3,7 @@ Database models and operationns for Loan Prediction API
 """
 
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 db = SQLAlchemy()
@@ -17,7 +17,7 @@ class Prediction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # Timestamp
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow,
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
                           nullable=False)
     
     # Input features (numeric)
@@ -156,7 +156,7 @@ def get_recent_predictions(limit=10):
 
 def get_prediction_by_id(prediction_id):
     """Get specific prediction by ID"""
-    return Prediction.query.get(prediction_id)
+    return db.session.get(Prediction, prediction_id)
 
 def get_predictions_by_date(start_date, end_date):
     """Get predictions within date range"""
@@ -190,8 +190,24 @@ def update_daily_stats(prediction_result):
     stats = APIStats.query.filter_by(date=today).first()
 
     if not stats:
-        stats = APIStats(date=today)
+        stats = APIStats(
+            date=today,
+            total_requests=0,
+            approved_count=0,
+            rejected_count=0,
+            avg_confidence=0.0
+        )
         db.session.add(stats)
+    
+    # Ensure fields are initialized
+    if stats.total_requests is None:
+        stats.total_requests = 0
+    if stats.approved_count is None:
+        stats.approved_count = 0
+    if stats.rejected_count is None:
+        stats.rejected_count = 0
+    if stats.avg_confidence is None:
+        stats.avg_confidence = 0.0
     
     stats.total_requests += 1
 
