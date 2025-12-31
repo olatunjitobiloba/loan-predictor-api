@@ -393,7 +393,7 @@ def history():
 def get_prediction(prediction_id):
     """Get specific prediction by ID"""
     try:
-        prediction = Prediction.query.get(prediction_id)
+        prediction = db.session.get(Prediction, prediction_id)
 
         if not prediction:
             return jsonify({"error": "Prediction not found"}), 404
