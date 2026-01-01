@@ -14,7 +14,7 @@ from database import db, init_db, Prediction, get_recent_predictions, get_statis
 app = Flask(__name__)
 
 # Configure databasee (use environment variable or default to SQLite)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.envirn.get(
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL',
     'sqlite:///predictions.db'
     )
