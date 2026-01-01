@@ -136,8 +136,7 @@ class APIStats(db.Model):
             'total_requests': self.total_requests,
             'approved_count': self.approved_count,
             'rejected_count': self.rejected_count,
-            'approval_rate': f"{(self.approved_count /
-self.total_requests * 100):.2f}%" if self.total_requests > 0 else "0%",
+            'approval_rate': f"{(self.approved_count / self.total_requests * 100):.2f}%" if self.total_requests > 0 else "0%",
             'avg_confidence': f"{self.avg_confidence:.2%}" 
         }
     
