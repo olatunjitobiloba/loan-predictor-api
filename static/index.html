@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Prediction AI | 88.62% Accuracy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">🤖 Loan Predictor AI</h1>
+                <nav class="nav">
+                    <a href="#home">Home</a>
+                    <a href="#predict">Predict</a>
+                    <a href="#stats">Statistics</a>
+                    <a href="#about">About</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">AI-Powered Loan Approval Prediction</h2>
+                <p class="hero-subtitle">Get instant loan approval predictions with 88.62% accuracy using advanced machine learning</p>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">88.62%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-predictions">0</div>
+                        <div class="stat-label">Predictions Made</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">83%</div>
+                        <div class="stat-label">Test Coverage</div>
+                    </div>
+                </div>
+                <a href="#predict" class="cta-button">Try It Now →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prediction Form Section -->
+    <section class="prediction-section" id="predict">
+        <div class="container">
+            <h2 class="section-title">Make a Prediction</h2>
+            <p class="section-subtitle">Enter applicant information to get instant loan approval prediction</p>
+
+            <div class="prediction-container">
+                <!-- Form -->
+                <div class="form-container">
+                    <form id="prediction-form">
+                        <!-- Personal Information -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">Personal Information</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <select id="gender" name="Gender">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="married">Married</label>
+                                    <select id="married" name="Married">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dependents">Dependents</label>
+                                    <select id="dependents" name="Dependents">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3+">3+</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="education">Education</label>
+                                    <select id="education" name="Education">
+                                        <option value="Graduate">Graduate</option>
+                                        <option value="Not Graduate">Not Graduate</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="self-employed">Self Employed</label>
+                                <select id="self-employed" name="Self_Employed">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Financial Information -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">Financial Information</h3>
+                            
+                            <div class="form-group">
+                                <label for="applicant-income">Applicant Income (Monthly) *</label>
+                                <input type="number" id="applicant-income" name="ApplicantIncome" 
+                                       placeholder="e.g., 5000" required min="0" max="100000">
+                                <small>Required field</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="coapplicant-income">Co-applicant Income (Monthly)</label>
+                                <input type="number" id="coapplicant-income" name="CoapplicantIncome" 
+                                       placeholder="e.g., 1500" min="0" max="100000" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="loan-amount">Loan Amount (in thousands)</label>
+                                <input type="number" id="loan-amount" name="LoanAmount" 
+                                       placeholder="e.g., 150" min="0" max="10000">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="loan-term">Loan Amount Term (months)</label>
+                                <select id="loan-term" name="Loan_Amount_Term">
+                                    <option value="360">360 (30 years)</option>
+                                    <option value="180">180 (15 years)</option>
+                                    <option value="240">240 (20 years)</option>
+                                    <option value="300">300 (25 years)</option>
+                                    <option value="120">120 (10 years)</option>
+                                    <option value="60">60 (5 years)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="credit-history">Credit History</label>
+                                <select id="credit-history" name="Credit_History">
+                                    <option value="1">Yes (Good credit history)</option>
+                                    <option value="0">No (No credit history)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="property-area">Property Area</label>
+                                <select id="property-area" name="Property_Area">
+                                    <option value="Urban">Urban</option>
+                                    <option value="Semiurban">Semiurban</option>
+                                    <option value="Rural">Rural</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-button" id="submit-btn">
+                            <span id="submit-text">Get Prediction</span>
+                            <span id="submit-loader" class="loader" style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results -->
+                <div class="results-container" id="results-container" style="display: none;">
+                    <div class="result-card" id="result-card">
+                        <div class="result-icon" id="result-icon">✓</div>
+                        <h3 class="result-title" id="result-title">Loan Approved!</h3>
+                        <p class="result-subtitle" id="result-subtitle">High confidence prediction</p>
+                        
+                        <div class="confidence-bar">
+                            <div class="confidence-label">Confidence</div>
+                            <div class="confidence-progress">
+                                <div class="confidence-fill" id="confidence-fill"></div>
+                            </div>
+                            <div class="confidence-value" id="confidence-value">0%</div>
+                        </div>
+
+                        <div class="probability-bars">
+                            <div class="probability-item">
+                                <div class="probability-label">
+                                    <span>Approval Probability</span>
+                                    <span id="approval-prob">0%</span>
+                                </div>
+                                <div class="probability-bar">
+                                    <div class="probability-fill approved" id="approval-fill"></div>
+                                </div>
+                            </div>
+                            <div class="probability-item">
+                                <div class="probability-label">
+                                    <span>Rejection Probability</span>
+                                    <span id="rejection-prob">0%</span>
+                                </div>
+                                <div class="probability-bar">
+                                    <div class="probability-fill rejected" id="rejection-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="warnings" id="warnings-container" style="display: none;">
+                            <h4>⚠️ Warnings</h4>
+                            <ul id="warnings-list"></ul>
+                        </div>
+
+                        <div class="result-actions">
+                            <button class="secondary-button" onclick="resetForm()">Make Another Prediction</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section" id="stats">
+        <div class="container">
+            <h2 class="section-title">Live Statistics</h2>
+            <div class="stats-grid" id="stats-grid">
+                <div class="stats-card">
+                    <div class="stats-icon">📊</div>
+                    <div class="stats-number" id="stats-total">Loading...</div>
+                    <div class="stats-label">Total Predictions</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon">✅</div>
+                    <div class="stats-number" id="stats-approved">Loading...</div>
+                    <div class="stats-label">Approved</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon">❌</div>
+                    <div class="stats-number" id="stats-rejected">Loading...</div>
+                    <div class="stats-label">Rejected</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-icon">📈</div>
+                    <div class="stats-number" id="stats-rate">Loading...</div>
+                    <div class="stats-label">Approval Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title">About This Project</h2>
+            <div class="about-content">
+                <div class="about-card">
+                    <h3>🤖 Machine Learning Model</h3>
+                    <p>Random Forest classifier trained on loan application data with 88.62% accuracy. Features include income analysis, credit history, and demographic factors.</p>
+                </div>
+                <div class="about-card">
+                    <h3>🔒 Data Privacy</h3>
+                    <p>All predictions are stored securely. No personal identifying information is required. This is a demonstration project for educational purposes.</p>
+                </div>
+                <div class="about-card">
+                    <h3>📊 Technology Stack</h3>
+                    <p>Built with Flask, scikit-learn, PostgreSQL, and deployed on Render. 83% test coverage with comprehensive validation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Built with ❤️ by [Your Name] | <a href="https://github.com/yourusername/loan-predictor-api" target="_blank">View on GitHub</a></p>
+            <p>Model Accuracy: 88.62% | Test Coverage: 83% | API: <a href="https://loan-predictor-api-91xu.onrender.com" target="_blank">Live</a></p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

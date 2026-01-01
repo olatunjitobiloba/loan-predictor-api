@@ -172,18 +172,14 @@ def preprocess_input(data):
 
     return df
 
+from flask import render_template
 
 @app.route('/')
 @app.route('/home')
-def home():
-    """Home page with API documentation"""
-    return render_template('home.html', title='Home')
-
-
-@app.route('/about')
-def about():
-    """About page"""
-    return render_template('about.html', title='About')
+@app.route('/app')
+def frontend():
+    """Serve frontend application"""
+    return render_template('index.html')
 
 
 @app.route('/api')
