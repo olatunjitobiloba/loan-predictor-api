@@ -21,6 +21,12 @@ Machine Learning API for predicting loan approval using Random Forest (88.62% ac
 - ✅ Web interface with Bootstrap 5
 - ✅ Complete data preprocessing pipeline
 
+## 🎨 Frontend Interface
+
+**Live Demo:** https://loan-predictor-api-91xu.onrender.com/app
+
+Beautiful, responsive web interface for making predictions.
+
 ## 🛠️ Tech Stack
 
 - **Backend:** Flask 3.1.2, Python 3.11
