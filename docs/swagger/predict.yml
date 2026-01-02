@@ -1,0 +1,145 @@
+Make loan approval prediction
+---
+tags:
+  - Prediction
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: Loan application data
+    schema:
+      type: object
+      required:
+        - ApplicantIncome
+      properties:
+        ApplicantIncome:
+          type: number
+          description: Monthly income of applicant
+          example: 5000
+          minimum: 0
+          maximum: 100000
+        CoapplicantIncome:
+          type: number
+          description: Monthly income of co-applicant
+          example: 1500
+          minimum: 0
+          maximum: 100000
+        LoanAmount:
+          type: number
+          description: Loan amount in thousands
+          example: 150
+          minimum: 0
+          maximum: 10000
+        Loan_Amount_Term:
+          type: number
+          description: Loan term in months
+          example: 360
+          enum: [12, 36, 60, 84, 120, 180, 240, 300, 360, 480]
+        Credit_History:
+          type: number
+          description: Credit history (1=Yes, 0=No)
+          example: 1
+          enum: [0, 1]
+        Gender:
+          type: string
+          description: Gender of applicant
+          example: Male
+          enum: [Male, Female]
+        Married:
+          type: string
+          description: Marital status
+          example: Yes
+          enum: [Yes, No]
+        Dependents:
+          type: string
+          description: Number of dependents
+          example: "0"
+          enum: ["0", "1", "2", "3+"]
+        Education:
+          type: string
+          description: Education level
+          example: Graduate
+          enum: [Graduate, Not Graduate]
+        Self_Employed:
+          type: string
+          description: Self employment status
+          example: No
+          enum: [Yes, No]
+        Property_Area:
+          type: string
+          description: Property area type
+          example: Urban
+          enum: [Urban, Semiurban, Rural]
+responses:
+  200:
+    description: Successful prediction
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        prediction:
+          type: string
+          example: Approved
+          enum: [Approved, Rejected]
+        prediction_code:
+          type: integer
+          example: 1
+          enum: [0, 1]
+        confidence:
+          type: number
+          example: 0.89
+          minimum: 0
+          maximum: 1
+        probability:
+          type: object
+          properties:
+            approved:
+              type: number
+              example: 0.89
+            rejected:
+              type: number
+              example: 0.11
+        prediction_id:
+          type: integer
+          example: 123
+        input_data:
+          type: object
+        model_info:
+          type: object
+          properties:
+            accuracy:
+              type: number
+              example: 0.8862
+            version:
+              type: string
+              example: "2.0"
+        timestamp:
+          type: string
+          example: "2026-01-02T12:00:00"
+        warnings:
+          type: array
+          items:
+            type: string
+  400:
+    description: Validation error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Validation failed
+        validation_errors:
+          type: array
+          items:
+            type: string
+          example: ["ApplicantIncome must be greater than 0"]
+  500:
+    description: Server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Internal server error

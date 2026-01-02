@@ -1,0 +1,25 @@
+Get overall API statistics
+---
+tags:
+  - Statistics
+responses:
+  200:
+    description: Statistics retrieved
+    schema:
+      type: object
+      properties:
+        total_predictions:
+          type: integer
+          example: 1234
+        approved:
+          type: integer
+          example: 890
+        rejected:
+          type: integer
+          example: 344
+        approval_rate:
+          type: string
+          example: "72.12%"
+        average_confidence:
+          type: string
+          example: "85.43%"
