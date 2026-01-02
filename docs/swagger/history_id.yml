@@ -1,0 +1,36 @@
+Get specific prediction by ID
+---
+tags:
+  - History
+parameters:
+  - name: prediction_id
+    in: path
+    type: integer
+    required: true
+    description: Prediction ID
+responses:
+  200:
+    description: Prediction found
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        timestamp:
+          type: string
+        prediction:
+          type: string
+        confidence:
+          type: number
+        input:
+          type: object
+        probability:
+          type: object
+  404:
+    description: Prediction not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Prediction not found

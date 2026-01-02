@@ -1,0 +1,25 @@
+Get detailed analytics
+---
+tags:
+  - Statistics
+responses:
+  200:
+    description: Analytics retrieved
+    schema:
+      type: object
+      properties:
+        overall:
+          type: object
+        last_24_hours:
+          type: object
+          properties:
+            total:
+              type: integer
+            approved:
+              type: integer
+            rejected:
+              type: integer
+            approval_rate:
+              type: string
+        confidence_analysis:
+          type: object

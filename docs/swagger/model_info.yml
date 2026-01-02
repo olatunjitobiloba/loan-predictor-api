@@ -1,0 +1,26 @@
+Get model information
+---
+tags:
+  - Information
+responses:
+  200:
+    description: Model information retrieved
+    schema:
+      type: object
+      properties:
+        accuracy:
+          type: number
+          example: 0.8862
+        precision:
+          type: number
+        recall:
+          type: number
+        f1_score:
+          type: number
+        features:
+          type: array
+          items:
+            type: string
+        feature_count:
+          type: integer
+          example: 15

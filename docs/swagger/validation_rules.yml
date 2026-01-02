@@ -1,0 +1,24 @@
+Get input validation rules
+---
+tags:
+  - Information
+responses:
+  200:
+    description: Validation rules retrieved
+    schema:
+      type: object
+      properties:
+        required_fields:
+          type: array
+          items:
+            type: string
+        optional_fields:
+          type: array
+          items:
+            type: string
+        valid_values:
+          type: object
+        ranges:
+          type: object
+        example_request:
+          type: object
