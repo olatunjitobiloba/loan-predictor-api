@@ -111,7 +111,17 @@ python app_v4.py
 # Open browser to http://localhost:5000
 ```
 
-## 📡 API Endpoints
+## � API Documentation
+
+**Interactive Documentation:** https://loan-predictor-api-91xu.onrender.com/docs
+
+Explore the API with Swagger UI:
+- Try endpoints interactively
+- View request/response schemas
+- See example requests
+- Test with your own data
+
+## �📡 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
