@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Prediction AI | {% if model_info and model_info.accuracy is not none %}{{ (model_info.accuracy * 100) | round(2) }}%{% else %}88.62%{% endif %} Accuracy</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Loan Prediction AI | 88.62% Accuracy</title>
+    <link rel="stylesheet" href="/static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -29,12 +29,12 @@
         <div class="container">
             <div class="hero-content">
                 <h2 class="hero-title">AI-Powered Loan Approval Prediction</h2>
-                <p class="hero-subtitle">Get instant loan approval predictions with {% if model_info and model_info.accuracy is not none %}{{ (model_info.accuracy * 100) | round(2) }}%{% else %}88.62%{% endif %} accuracy using advanced machine learning</p>
+                <p class="hero-subtitle">Get instant loan approval predictions with 88.62% accuracy using advanced machine learning</p>
                 <div class="hero-stats">
-                        <div class="stat-card">
-                            <div class="stat-number">{% if model_info and model_info.accuracy is not none %}{{ (model_info.accuracy * 100) | round(2) }}%{% else %}88.62%{% endif %}</div>
-                            <div class="stat-label">Accuracy</div>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-number">88.62%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
                     <div class="stat-card">
                         <div class="stat-number" id="total-predictions">0</div>
                         <div class="stat-label">Predictions Made</div>
@@ -319,7 +319,7 @@
             <div class="about-content">
                 <div class="about-card">
                     <h3>🤖 Machine Learning Model</h3>
-                    <p>Random Forest classifier trained on loan application data with {% if model_info and model_info.accuracy is not none %}{{ (model_info.accuracy * 100) | round(2) }}%{% else %}88.62%{% endif %} accuracy. Features include income analysis, credit history, and demographic factors.</p>
+                    <p>Random Forest classifier trained on loan application data with 88.62% accuracy. Features include income analysis, credit history, and demographic factors.</p>
                 </div>
                 <div class="about-card">
                     <h3>🔒 Data Privacy</h3>
@@ -339,16 +339,14 @@
             <p>Built with ❤️ by Your Team | <a href="https://github.com/olatunjitobiloba1/loan-predictor-api" target="_blank">View on GitHub</a></p>
             <p>
                 Model Accuracy: 
-                {% if model_info and model_info.accuracy is not none %}
-                    {{ (model_info.accuracy * 100) | round(2) }}%
-                {% else %}
-                    N/A
-                {% endif %}
+                
+                    85.37%
+                
                 | Test Coverage: 83% | API: <a href="https://loan-predictor-api-91xu.onrender.com" target="_blank">Live</a>
             </p>
         </div>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="/static/js/app.js"></script>
 </body>
 </html>
