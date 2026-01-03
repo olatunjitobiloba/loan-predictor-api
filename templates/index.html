@@ -16,6 +16,7 @@
                 <nav class="nav">
                     <a href="#home">Home</a>
                     <a href="#predict">Predict</a>
+                    <a href="#comparison">Models</a>
                     <a href="#stats">Statistics</a>
                     <a href="#about">About</a>
                 </nav>
@@ -220,6 +221,68 @@
         </div>
     </section>
 
+    <!-- Model Comparison Section -->
+    <section class="comparison-section" id="comparison">
+        <div class="container">
+            <h2 class="section-title">Model Comparison</h2>
+            <p class="section-subtitle">Compare predictions from different ML models side-by-side</p>
+
+            <div class="comparison-container">
+                <!-- Model Cards Grid -->
+                <div class="models-grid" id="models-grid">
+                    <div class="model-loading">
+                        <div class="loader"></div>
+                        <p>Loading available models...</p>
+                    </div>
+                </div>
+
+                <!-- Benchmark Testing -->
+                <div class="benchmark-container">
+                    <div class="benchmark-header">
+                        <h3>🔬 Benchmark Test</h3>
+                        <p>Test all models with the same input data to compare their predictions</p>
+                    </div>
+                    
+                    <div class="benchmark-actions">
+                        <button class="cta-button" onclick="benchmarkModels()" id="benchmark-btn">
+                            <span id="benchmark-text">Run Benchmark Test</span>
+                            <span id="benchmark-loader" class="loader" style="display: none;"></span>
+                        </button>
+                        <p class="benchmark-note">Uses the last prediction input or default test data</p>
+                    </div>
+                    
+                    <div id="benchmark-results" class="benchmark-results" style="display: none;">
+                        <!-- Benchmark results will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Model Performance Comparison -->
+                <div class="performance-comparison">
+                    <h3>📊 Model Performance Metrics</h3>
+                    <div class="metrics-table" id="metrics-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Accuracy</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1 Score</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="metrics-tbody">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">Loading metrics...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Statistics Section -->
     <section class="stats-section" id="stats">
         <div class="container">
@@ -274,7 +337,15 @@
     <footer class="footer">
         <div class="container">
             <p>Built with ❤️ by Your Team | <a href="https://github.com/olatunjitobiloba1/loan-predictor-api" target="_blank">View on GitHub</a></p>
-            <p>Model Accuracy: 88.62% | Test Coverage: 83% | API: <a href="https://loan-predictor-api-91xu.onrender.com" target="_blank">Live</a></p>
+            <p>
+                Model Accuracy: 
+                {% if model_info and model_info.accuracy is not none %}
+                    {{ (model_info.accuracy * 100) | round(2) }}%
+                {% else %}
+                    N/A
+                {% endif %}
+                | Test Coverage: 83% | API: <a href="https://loan-predictor-api-91xu.onrender.com" target="_blank">Live</a>
+            </p>
         </div>
     </footer>
 

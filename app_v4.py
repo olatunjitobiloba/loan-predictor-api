@@ -167,7 +167,27 @@ def preprocess_input(data):
     # ============================================================================
     # SELECT ONLY REQUIRED FEATURES IN CORRECT ORDER
     # ============================================================================
-    
+    # Create additional alias columns expected by older feature lists
+    # Some versions expect underscored names and one-hot property flags
+    try:
+        df['Total_Income'] = df['TotalIncome']
+    except Exception:
+        df['Total_Income'] = df.get('TotalIncome', df['ApplicantIncome'] + df['CoapplicantIncome'])
+
+    # Loan to income / income-loan ratio naming variants
+    if 'Income_Loan_Ratio' in df.columns:
+        df['Loan_to_Income_Ratio'] = df['Income_Loan_Ratio']
+    else:
+        df['Loan_to_Income_Ratio'] = df['Total_Income'] / (df['LoanAmount'] + 1)
+
+    # Income per dependent (safeguard)
+    if 'Income_per_Dependent' not in df.columns:
+        df['Income_per_Dependent'] = df['Total_Income'] / (df['Dependents'] + 1)
+
+    # One-hot property flags (older feature sets)
+    df['Property_Semiurban'] = (df['Property_Area_Encoded'] == 1).astype(int)
+    df['Property_Urban'] = (df['Property_Area_Encoded'] == 2).astype(int)
+
     df = df[feature_names]
 
     return df
@@ -259,10 +279,24 @@ def predict():
         if warnings:
             logger.info(f"Validation warnings: {warnings}")
 
-        # Preprocess and predict
+        # Preprocess and prepare model input
         df_processed = preprocess_input(data)
-        prediction = model.predict(df_processed)[0]
-        prediction_proba = model.predict_proba(df_processed)[0]
+
+        # Ensure columns match the model's expected features. If the model exposes
+        # `feature_names_in_`, reindex to that order and fill missing with 0.
+        try:
+            if hasattr(model, 'feature_names_in_'):
+                expected = list(model.feature_names_in_)
+                model_input = df_processed.reindex(columns=expected, fill_value=0)
+            else:
+                model_input = df_processed
+
+            prediction = model.predict(model_input)[0]
+            prediction_proba = model.predict_proba(model_input)[0]
+        except Exception:
+            # Fallback: try passing raw processed frame values
+            prediction = model.predict(df_processed.values)[0]
+            prediction_proba = model.predict_proba(df_processed.values)[0]
 
         # Prepare result
         result = {
