@@ -147,7 +147,8 @@ def init_db(app):
     with app.app_context():
         # Create all tables
         db.create_all()
-        print("✅ Database initialized")
+        # Avoid non-ASCII characters here to prevent Windows console encoding errors
+        print("Database initialized")
 
 def get_recent_predictions(limit=10):
     """Get recent predictions"""

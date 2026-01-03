@@ -3,10 +3,11 @@ const API_URL = window.location.hostname === 'localhost' || window.location.host
     ? '' 
     : 'https://loan-predictor-api-91xu.onrender.com';
 
-// Load statistics on page load
+// Load statistics and models on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadStatistics();
     loadTotalPredictions();
+    loadModels();
 });
 
 // Load statistics
@@ -51,6 +52,245 @@ function animateNumber(elementId, targetNumber) {
             element.textContent = Math.floor(current);
         }
     }, 20);
+}
+
+// Load and display available models
+async function loadModels() {
+    try {
+        const response = await fetch(`${API_URL}/models`);
+        const data = await response.json();
+        
+        const modelsGrid = document.getElementById('models-grid');
+        if (!modelsGrid) return; // Exit if element doesn't exist
+        
+        modelsGrid.innerHTML = '';
+        
+        const bestModel = data.best_model;
+        
+        Object.entries(data.models).forEach(([modelKey, modelData]) => {
+            const isBest = modelKey === bestModel;
+            
+            const card = document.createElement('div');
+            card.className = `model-card ${isBest ? 'best' : ''}`;
+            card.innerHTML = `
+                <div class="model-header">
+                    <h3 class="model-name">${modelData.name}</h3>
+                    ${isBest ? '<span class="best-badge">🏆 BEST</span>' : ''}
+                </div>
+                <div class="model-metrics">
+                    <div class="metric-row">
+                        <span class="metric-label">Accuracy</span>
+                        <span class="metric-value">${(modelData.accuracy * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Precision</span>
+                        <span class="metric-value">${(modelData.precision * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Recall</span>
+                        <span class="metric-value">${(modelData.recall * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">F1-Score</span>
+                        <span class="metric-value">${(modelData.f1_score * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Prediction Time</span>
+                        <span class="metric-value">${(modelData.avg_prediction_time * 1000).toFixed(2)}ms</span>
+                    </div>
+                </div>
+            `;
+            
+            modelsGrid.appendChild(card);
+        });
+        // Also populate the performance metrics table (best model + summary)
+        if (typeof renderMetricsTable === 'function') {
+            renderMetricsTable(data.models, data.best_model);
+        }
+    } catch (error) {
+        console.error('Error loading models:', error);
+    }
+}
+
+// Render the metrics table under the Model Performance Metrics section
+function renderMetricsTable(models, bestModelKey) {
+    const tbody = document.getElementById('metrics-tbody');
+    if (!tbody) return;
+
+    // Clear existing rows
+    tbody.innerHTML = '';
+
+    if (!models || Object.keys(models).length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="6" class="loading-cell">No metrics available</td>';
+        tbody.appendChild(tr);
+        return;
+    }
+
+    // Determine best model object
+    let bestModel = models[bestModelKey];
+    if (!bestModel) {
+        // Fallback: choose model with highest accuracy
+        bestModel = Object.values(models).reduce((best, m) => {
+            if (!best) return m;
+            const a = typeof m.accuracy === 'number' ? m.accuracy : -Infinity;
+            const b = typeof best.accuracy === 'number' ? best.accuracy : -Infinity;
+            return a > b ? m : best;
+        }, null);
+    }
+
+    // Compute averages
+    let sumAcc = 0, sumPrec = 0, sumRec = 0, sumF1 = 0;
+    let countAcc = 0, countPrec = 0, countRec = 0, countF1 = 0;
+    Object.values(models).forEach(m => {
+        if (typeof m.accuracy === 'number') { sumAcc += m.accuracy; countAcc++; }
+        if (typeof m.precision === 'number') { sumPrec += m.precision; countPrec++; }
+        if (typeof m.recall === 'number') { sumRec += m.recall; countRec++; }
+        if (typeof m.f1_score === 'number') { sumF1 += m.f1_score; countF1++; }
+    });
+
+    const avgAcc = countAcc ? (sumAcc / countAcc) : null;
+    const avgPrec = countPrec ? (sumPrec / countPrec) : null;
+    const avgRec = countRec ? (sumRec / countRec) : null;
+    const avgF1 = countF1 ? (sumF1 / countF1) : null;
+
+    // Best model row
+    if (bestModel) {
+        const trBest = document.createElement('tr');
+        const name = bestModel.name || bestModelKey || 'Best Model';
+        const accuracy = typeof bestModel.accuracy === 'number' ? (bestModel.accuracy * 100).toFixed(2) + '%' : 'N/A';
+        const precision = typeof bestModel.precision === 'number' ? (bestModel.precision * 100).toFixed(2) + '%' : 'N/A';
+        const recall = typeof bestModel.recall === 'number' ? (bestModel.recall * 100).toFixed(2) + '%' : 'N/A';
+        const f1 = typeof bestModel.f1_score === 'number' ? (bestModel.f1_score * 100).toFixed(2) + '%' : 'N/A';
+        const status = bestModel.loaded ? 'Best (Loaded)' : 'Best (Not loaded)';
+
+        trBest.innerHTML = `
+            <td>${name}</td>
+            <td>${accuracy}</td>
+            <td>${precision}</td>
+            <td>${recall}</td>
+            <td>${f1}</td>
+            <td>${status}</td>
+        `;
+        tbody.appendChild(trBest);
+    }
+
+    // Summary / averages row
+    const trAvg = document.createElement('tr');
+    trAvg.innerHTML = `
+        <td><strong>Average</strong></td>
+        <td><strong>${avgAcc !== null ? (avgAcc * 100).toFixed(2) + '%' : 'N/A'}</strong></td>
+        <td><strong>${avgPrec !== null ? (avgPrec * 100).toFixed(2) + '%' : 'N/A'}</strong></td>
+        <td><strong>${avgRec !== null ? (avgRec * 100).toFixed(2) + '%' : 'N/A'}</strong></td>
+        <td><strong>${avgF1 !== null ? (avgF1 * 100).toFixed(2) + '%' : 'N/A'}</strong></td>
+        <td><strong>Summary</strong></td>
+    `;
+    tbody.appendChild(trAvg);
+}
+
+// Benchmark all models
+async function benchmarkModels() {
+    const formData = new FormData(document.getElementById('prediction-form'));
+    const data = {};
+    
+    formData.forEach((value, key) => {
+        if (['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term', 'Credit_History'].includes(key)) {
+            data[key] = value ? parseFloat(value) : undefined;
+        } else {
+            data[key] = value;
+        }
+    });
+    
+    // Check if form has required data
+    if (!data.ApplicantIncome) {
+        alert('Please fill in at least the Applicant Income field');
+        return;
+    }
+    
+    // Show loading state
+    const benchmarkBtn = document.getElementById('benchmark-btn');
+    if (benchmarkBtn) {
+        benchmarkBtn.disabled = true;
+        benchmarkBtn.textContent = 'Running Benchmark...';
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/models/benchmark`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            displayBenchmarkResults(result);
+        } else {
+            alert('Error: ' + (result.error || 'Benchmark failed'));
+        }
+    } catch (error) {
+        console.error('Benchmark error:', error);
+        alert('Error running benchmark. Please ensure the form is filled correctly.');
+    } finally {
+        // Reset button
+        if (benchmarkBtn) {
+            benchmarkBtn.disabled = false;
+            benchmarkBtn.textContent = 'Compare All Models';
+        }
+    }
+}
+
+// Display benchmark results
+function displayBenchmarkResults(result) {
+    const container = document.getElementById('benchmark-results');
+    if (!container) return;
+    
+    container.style.display = 'block';
+    
+    let html = '<h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">Benchmark Results</h3>';
+    
+    // Consensus
+    const consensusColor = result.consensus.prediction === 'Approved' ? 'var(--success-color)' : 'var(--danger-color)';
+    html += `
+        <div class="consensus-box" style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 2px solid ${consensusColor};">
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Model Consensus</div>
+            <div class="consensus-prediction" style="font-size: 2rem; font-weight: 700; color: ${consensusColor}; margin-bottom: 0.5rem;">
+                ${result.consensus.prediction}
+            </div>
+            <div class="consensus-agreement" style="font-size: 0.875rem; color: var(--text-secondary);">
+                ${result.consensus.agreement} agreement (${result.consensus.models_agree}/${result.consensus.total_models} models)
+            </div>
+        </div>
+    `;
+    
+    // Individual results
+    html += '<div class="benchmark-results-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">';
+    Object.entries(result.results).forEach(([modelName, modelResult]) => {
+        const isApproved = modelResult.prediction === 'Approved';
+        const borderColor = isApproved ? 'var(--success-color)' : 'var(--danger-color)';
+        const predictionColor = isApproved ? 'var(--success-color)' : 'var(--danger-color)';
+        
+        html += `
+            <div class="benchmark-result-card" style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 2px solid ${borderColor}; transition: transform 0.3s ease;">
+                <h4 style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--text-primary);">
+                    ${modelName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </h4>
+                <div style="font-size: 1.5rem; font-weight: 700; margin: 0.5rem 0; color: ${predictionColor};">
+                    ${modelResult.prediction}
+                </div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Confidence: ${(modelResult.confidence * 100).toFixed(1)}%
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Time: ${modelResult.prediction_time}
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // Handle form submission
@@ -177,6 +417,13 @@ function displayResults(result) {
 function resetForm() {
     document.getElementById('prediction-form').reset();
     document.getElementById('results-container').style.display = 'none';
+    
+    // Hide benchmark results if visible
+    const benchmarkResults = document.getElementById('benchmark-results');
+    if (benchmarkResults) {
+        benchmarkResults.style.display = 'none';
+    }
+    
     document.getElementById('predict').scrollIntoView({ behavior: 'smooth' });
 }
 
