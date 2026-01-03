@@ -37,7 +37,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Initialize Swagger
-swagger = Swagger(app, config=swagger_config, template=swagger_template)
+try:
+    swagger = Swagger(app, config=swagger_config, template=swagger_template)
+    print("✅ Swagger initialized successfully")
+except Exception as e:
+    print(f"❌ Swagger initialization failed: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Initialize database
 init_db(app)
