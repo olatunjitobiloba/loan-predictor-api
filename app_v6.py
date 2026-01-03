@@ -5,27 +5,65 @@ import numpy as np
 import json
 import logging
 import os
-from dotenv import load_dotenv
-load_dotenv()
+import time
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from flasgger import Swagger, swag_from
+from flask_caching import Cache
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_compress import Compress
+
 from validators import LoanApplicationValidator
 from database import db, init_db, Prediction, get_recent_predictions, get_statistics, update_daily_stats
+from docs.swagger.config import swagger_config, swagger_template
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
-# Configure database (use environment variable or default to SQLite)
+# Configure JSON formatting for better readability
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.json.sort_keys = False
+
+# Configure database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL',
+    'DATABASE_URL', 
     'sqlite:///predictions.db'
 )
 
-# Handle PostgreSQL URL format (Render uses postgresql://, SQLAlchemy needs postgresql+psycopg2://)
 if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace(
-    'postgres://', 'postgresql+psycopg2://', 1
-)
+        'postgres://', 'postgresql+psycopg2://', 1
+    )
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+
+# Configure caching
+app.config['CACHE_TYPE'] = 'simple'  # In-memory cache
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # 5 minutes
+
+# Initialize extensions
+cache = Cache(app)
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["1000 per day", "200 per hour"],
+    storage_uri="memory://"
+)
+compress = Compress(app)
+
+# Initialize Swagger
+try:
+    swagger = Swagger(app, config=swagger_config, template=swagger_template)
+    print("Swagger initialized successfully")
+except Exception as e:
+    print(f"Swagger initialization failed: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Initialize database
 init_db(app)
 
@@ -46,23 +84,51 @@ feature_names = []
 model_info = {}
 validator = LoanApplicationValidator()
 
+# Performance tracking
+request_times = []
+
+@app.before_request
+def before_request():
+    """Track request start time"""
+    request.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    """Track request duration and add headers"""
+    if hasattr(request, 'start_time'):
+        duration = time.time() - request.start_time
+        request_times.append(duration)
+        
+        # Keep only last 1000 requests
+        if len(request_times) > 1000:
+            request_times.pop(0)
+        
+        # Add performance header
+        response.headers['X-Response-Time'] = f"{duration:.3f}s"
+    
+    # Add cache headers
+    if request.method == 'GET':
+        response.headers['Cache-Control'] = 'public, max-age=300'
+    
+    return response
+
 def load_model():
     """Load the trained model and metadata on startup"""
     global model, feature_names, model_info
-
+    
     try:
         model_path = 'models/loan_model_v2.pkl'
         model = joblib.load(model_path)
         logger.info(f"[OK] Model loaded from {model_path}")
-
+        
         with open('models/feature_names.txt', 'r') as f:
             feature_names = [line.strip() for line in f.readlines()]
         logger.info(f"[OK] Loaded {len(feature_names)} feature names")
-
+        
         with open('models/model_info.json', 'r') as f:
             model_info = json.load(f)
-        logger.info(f"[OK] Model accuracy: {model_info['accuracy']:.2%}")
-
+        logger.info(f"[OK] Model accuracy: {model_info.get('accuracy', 0):.2%}")
+        
         return True
     except Exception as e:
         logger.error(f"[ERROR] Error loading model: {str(e)}")
@@ -71,16 +137,16 @@ def load_model():
 def preprocess_input(data):
     """
     Preprocess input data to match training data format
-
+    
     Parameters:
     - data: Dictionary with loan application details
-
+    
     Returns:
     - DataFrame ready for prediction
     """
     # Create DataFrame from input
     df = pd.DataFrame([data])
-
+    
     # Handle missing values (use same logic as training)
     # Numeric columns - fill with median (use training medians)
     if 'LoanAmount' not in df.columns or pd.isna(df['LoanAmount'].iloc[0]):
@@ -88,14 +154,14 @@ def preprocess_input(data):
     
     if 'Loan_Amount_Term' not in df.columns or pd.isna(df['Loan_Amount_Term'].iloc[0]):
         df['Loan_Amount_Term'] = 360.0  # Training median
-
+    
     if 'Credit_History' not in df.columns or pd.isna(df['Credit_History'].iloc[0]):
         df['Credit_History'] = 1.0  # Training mode
     
     # CoapplicantIncome - default to 0
     if 'CoapplicantIncome' not in df.columns:
         df['CoapplicantIncome'] = 0
-
+    
     # Categorical defaults
     if 'Gender' not in df.columns:
         df['Gender'] = 'Male'
@@ -116,25 +182,25 @@ def preprocess_input(data):
     
     # Total Income
     df['TotalIncome'] = df['ApplicantIncome'] + df['CoapplicantIncome']
-
+    
     # Income to Loan Ratio
     df['Income_Loan_Ratio'] = df['TotalIncome'] / (df['LoanAmount'] + 1)
-
+    
     # Loan Amount per Term
     df['Loan_Amount_Per_Term'] = df['LoanAmount'] / (df['Loan_Amount_Term'] + 1)
-
+    
     # EMI (Estimated Monthly Installment)
     df['EMI'] = df['LoanAmount'] / (df['Loan_Amount_Term'] / 12 + 1)
-
+    
     # Balance Income (Income after EMI)
     df['Balance_Income'] = df['TotalIncome'] - (df['EMI'] * 1000)
-
+    
     # Log transformations for skewed features
     df['Log_ApplicantIncome'] = np.log1p(df['ApplicantIncome'])
     df['Log_CoapplicantIncome'] = np.log1p(df['CoapplicantIncome'])
     df['Log_LoanAmount'] = np.log1p(df['LoanAmount'])
     df['Log_TotalIncome'] = np.log1p(df['TotalIncome'])
-
+    
     # ============================================================================
     # ENCODE CATEGORICAL VARIABLES
     # ============================================================================
@@ -142,69 +208,82 @@ def preprocess_input(data):
     # Map Gender
     gender_map = {'Male': 1, 'Female': 0}
     df['Gender_Encoded'] = df['Gender'].map(gender_map).fillna(1)
-
+    
     # Map Married
     married_map = {'Yes': 1, 'No': 0}
     df['Married_Encoded'] = df['Married'].map(married_map).fillna(1)
-
+    
     # Map Dependents
     df['Dependents'] = df['Dependents'].replace('3+', '3')
     df['Dependents'] = pd.to_numeric(df['Dependents'], errors='coerce').fillna(0)
     df['Dependents_Encoded'] = df['Dependents']
-
+    
     # Map Education
     education_map = {'Graduate': 1, 'Not Graduate': 0}
     df['Education_Encoded'] = df['Education'].map(education_map).fillna(1)
-
+    
     # Map Self_Employed
     self_employed_map = {'Yes': 1, 'No': 0}
     df['Self_Employed_Encoded'] = df['Self_Employed'].map(self_employed_map).fillna(0)
-
+    
     # Map Property_Area
     property_map = {'Urban': 2, 'Semiurban': 1, 'Rural': 0}
     df['Property_Area_Encoded'] = df['Property_Area'].map(property_map).fillna(2)
-
+    
     # ============================================================================
     # SELECT ONLY REQUIRED FEATURES IN CORRECT ORDER
     # ============================================================================
     
+    # Ensure all required features exist
+    for feature in feature_names:
+        if feature not in df.columns:
+            df[feature] = 0
+    
     df = df[feature_names]
-
+    
     return df
 
-from flask import render_template
-
 @app.route('/')
-@app.route('/home')
-@app.route('/app')
-def frontend():
-    """Serve frontend application"""
-    return render_template('index.html')
-
-
-@app.route('/api')
-def api_info():
-    """API information endpoint"""
+@cache.cached(timeout=60)  # Cache for 1 minute
+def home():
+    """
+    API information endpoint
+    ---
+    tags:
+      - Information
+    """
     stats = get_statistics()
-
+    
     return jsonify({
-        "name": "Loan Predictor API",
-        "version": "4.0",
+        "name": "Loan Prediction API",
+        "version": "6.0",
         "status": "running",
         "model_loaded": model is not None,
         "model_accuracy": f"{model_info.get('accuracy', 0):.2%}",
         "database": "connected",
+        "documentation": "/docs",
         "statistics": stats,
         "features": {
             "validation": "Comprehensive input validation",
             "database": "Prediction history storage",
-            "analytics": "Usage statistics and trends"
+            "analytics": "Usage statistics and trends",
+            "documentation": "Interactive Swagger UI",
+            "caching": "Response caching for performance",
+            "rate_limiting": "API rate limiting",
+            "compression": "Response compression"
         },
-        "endpoints":{
-            "/": "Home page",
-            "/home": "Home page",
-            "/about": "About page",
-            "/api": "API information",
+        "performance": {
+            "caching": "enabled",
+            "compression": "enabled",
+            "rate_limits": {
+                "default": "200 per hour, 1000 per day",
+                "predictions": "100 per hour"
+            }
+        },
+        "endpoints": {
+            "/": "API information",
+            "/app": "Frontend application",
+            "/docs": "Interactive API documentation",
             "/health": "Health check",
             "/predict": "Make loan prediction (POST)",
             "/validate-loan": "Validate loan data (POST)",
@@ -213,42 +292,57 @@ def api_info():
             "/statistics": "Overall statistics",
             "/analytics": "Detailed analytics",
             "/model-info": "Model details",
-            "/validation-rules": "Input validation rules"
+            "/validation-rules": "Input validation rules",
+            "/performance": "Performance metrics",
+            "/search": "Search endpoint (GET)",
+            "/headers": "Show request headers",
+            "/request-info": "Show request metadata",
+            "/cache/clear": "Clear cache (POST)"
         }
     })
 
+@app.route('/app')
+def frontend():
+    """Serve frontend application"""
+    return render_template('index.html')
+
 @app.route('/health')
+@swag_from('docs/swagger/health.yml')
 def health():
     """Health check endpoint"""
     return jsonify({
         "status": "healthy",
         "model_loaded": model is not None,
         "database": "connected",
+        "cache": "enabled",
+        "compression": "enabled",
         "timestamp": datetime.now().isoformat()
     })
 
 @app.route('/predict', methods=['POST'])
+@swag_from('docs/swagger/predict.yml')
+@limiter.limit("100 per hour")  # Stricter limit for predictions
 def predict():
     """Predict loan approval and store in database"""
-
+    
     try:
         logger.info(f"Prediction request from {request.remote_addr}")
-
+        
         if not model:
             logger.error("Model not loaded")
             return jsonify({"error": "Model not loaded"}), 500
         
         data = request.get_json()
-
+        
         if not data:
             return jsonify({
                 "error": "No data provided",
                 "message": "Please send JSON data in request body"
-                }), 400
+            }), 400
         
         # Validate input
         is_valid, errors, warnings = validator.validate_loan_application(data)
-
+        
         if not is_valid:
             logger.warning(f"Validation failed: {errors}")
             return jsonify({
@@ -258,19 +352,19 @@ def predict():
         
         if warnings:
             logger.info(f"Validation warnings: {warnings}")
-
+        
         # Preprocess and predict
         df_processed = preprocess_input(data)
         prediction = model.predict(df_processed)[0]
         prediction_proba = model.predict_proba(df_processed)[0]
-
+        
         # Prepare result
         result = {
             "success": True,
             "prediction": "Approved" if prediction == 1 else "Rejected",
             "prediction_code": int(prediction),
             "confidence": float(max(prediction_proba)),
-            "probability":{
+            "probability": {
                 "rejected": float(prediction_proba[0]),
                 "approved": float(prediction_proba[1])
             },
@@ -281,34 +375,37 @@ def predict():
             },
             "timestamp": datetime.now().isoformat()
         }
-
+        
         if warnings:
             result["warnings"] = warnings
-
+        
         # Store in database
         try:
             prediction_record = Prediction.from_request(
-                data,
-                result,
-                warnings,
+                data, 
+                result, 
+                warnings, 
                 request.remote_addr
             )
             db.session.add(prediction_record)
             db.session.commit()
-
+            
             result["prediction_id"] = prediction_record.id
-
+            
             # Update daily statistics
             update_daily_stats(result)
-
-            logger.info(f"Prediction stored: ID={prediction_record.id},Result={result['prediction']}")
+            
+            # Clear statistics cache since data changed
+            cache.delete('view//statistics')
+            cache.delete('view//analytics')
+            
+            logger.info(f"Prediction stored: ID={prediction_record.id}, Result={result['prediction']}")
         except Exception as e:
             logger.error(f"Database error: {str(e)}")
-            # Continue even if database fails
             result["database_warning"] = "Prediction not stored in database"
         
         logger.info(f"Prediction: {result['prediction']}, Confidence: {result['confidence']:.2%}")
-
+        
         return jsonify(result), 200
     
     except Exception as e:
@@ -317,7 +414,6 @@ def predict():
             "error": "Internal server error",
             "message": str(e)
         }), 500
-
 
 @app.route('/validate-loan', methods=['POST'])
 def validate_loan():
@@ -379,16 +475,17 @@ def validate_loan():
             "message": str(e)
         }), 500
 
-
 @app.route('/history')
+@swag_from('docs/swagger/history.yml')
+@cache.cached(timeout=30, query_string=True)  # Cache for 30 seconds
 def history():
     """Get recent prediction history"""
     try:
         limit = request.args.get('limit', 10, type=int)
-        limit = min(limit, 100) # Max 100 records
-
+        limit = min(limit, 100)
+        
         predictions = get_recent_predictions(limit)
-
+        
         return jsonify({
             "count": len(predictions),
             "predictions": [p.to_dict() for p in predictions]
@@ -396,13 +493,15 @@ def history():
     except Exception as e:
         logger.error(f"History error: {str(e)}")
         return jsonify({"error": str(e)}), 500
-    
+
 @app.route('/history/<int:prediction_id>')
+@swag_from('docs/swagger/history_id.yml')
+@cache.cached(timeout=300)  # Cache for 5 minutes
 def get_prediction(prediction_id):
     """Get specific prediction by ID"""
     try:
         prediction = Prediction.query.get(prediction_id)
-
+        
         if not prediction:
             return jsonify({"error": "Prediction not found"}), 404
         
@@ -412,6 +511,8 @@ def get_prediction(prediction_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/statistics')
+@swag_from('docs/swagger/statistics.yml')
+@cache.cached(timeout=60)  # Cache for 1 minute
 def statistics():
     """Get overall statistics"""
     try:
@@ -422,23 +523,22 @@ def statistics():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/analytics')
+@swag_from('docs/swagger/analytics.yml')
+@cache.cached(timeout=120)  # Cache for 2 minutes
 def analytics():
     """Get detailed analytics"""
     try:
-        # Overall stats
         stats = get_statistics()
-
-        # Recent trends (last 24 hours)
+        
         yesterday = datetime.now() - timedelta(days=1)
         recent = Prediction.query.filter(Prediction.timestamp >= yesterday).all()
-
+        
         recent_approved = sum(1 for p in recent if p.prediction == 'Approved')
         recent_rejected = len(recent) - recent_approved
-
-        # Average confidence by prediction type
+        
         approved_predictions = Prediction.query.filter_by(prediction='Approved').all()
         rejected_predictions = Prediction.query.filter_by(prediction='Rejected').all()
-
+        
         avg_confidence_approved = np.mean([p.confidence for p in approved_predictions]) if approved_predictions else 0
         avg_confidence_rejected = np.mean([p.confidence for p in rejected_predictions]) if rejected_predictions else 0
         
@@ -460,8 +560,10 @@ def analytics():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/model-info')
+@swag_from('docs/swagger/model_info.yml')
+@cache.cached(timeout=3600)  # Cache for 1 hour (rarely changes)
 def model_info_endpoint():
-    """Return mode information"""
+    """Return model information"""
     if not model:
         return jsonify({"error": "Model not loaded"}), 500
     
@@ -475,6 +577,8 @@ def model_info_endpoint():
     })
 
 @app.route('/validation-rules')
+@swag_from('docs/swagger/validation_rules.yml')
+@cache.cached(timeout=3600)  # Cache for 1 hour (rarely changes)
 def validation_rules():
     """Return validation rules"""
     return jsonify({
@@ -498,7 +602,58 @@ def validation_rules():
             "LoanAmount": f"{validator.MIN_LOAN_AMOUNT} - {validator.MAX_LOAN_AMOUNT}",
             "Credit_History": "0 or 1",
             "Loan_Amount_Term": validator.VALID_LOAN_TERMS
+        },
+        "example_request": {
+            "ApplicantIncome": 5000,
+            "CoapplicantIncome": 1500,
+            "LoanAmount": 150,
+            "Loan_Amount_Term": 360,
+            "Credit_History": 1,
+            "Gender": "Male",
+            "Married": "Yes",
+            "Dependents": "0",
+            "Education": "Graduate",
+            "Self_Employed": "No",
+            "Property_Area": "Urban"
         }
+    })
+
+@app.route('/performance')
+def performance_metrics():
+    """
+    Get performance metrics
+    ---
+    tags:
+      - Information
+    responses:
+      200:
+        description: Performance metrics
+    """
+    if not request_times:
+        return jsonify({
+            "message": "No requests tracked yet",
+            "avg_response_time": 0,
+            "min_response_time": 0,
+            "max_response_time": 0
+        })
+    
+    return jsonify({
+        "requests_tracked": len(request_times),
+        "avg_response_time": f"{np.mean(request_times):.3f}s",
+        "min_response_time": f"{min(request_times):.3f}s",
+        "max_response_time": f"{max(request_times):.3f}s",
+        "median_response_time": f"{np.median(request_times):.3f}s",
+        "p95_response_time": f"{np.percentile(request_times, 95):.3f}s",
+        "p99_response_time": f"{np.percentile(request_times, 99):.3f}s",
+        "cache_info": {
+            "type": app.config['CACHE_TYPE'],
+            "timeout": app.config['CACHE_DEFAULT_TIMEOUT']
+        },
+        "rate_limits": {
+            "default": "200 per hour, 1000 per day",
+            "predictions": "100 per hour"
+        },
+        "compression": "enabled"
     })
 
 @app.route('/search', methods=['GET'])
@@ -515,7 +670,6 @@ def search():
         "message": f"Searching for '{query}' with limit {limit} on page {page}"
     })
 
-
 @app.route('/headers', methods=['GET', 'POST'])
 def show_headers():
     """Show request headers (for debugging)"""
@@ -528,7 +682,6 @@ def show_headers():
         "content_type": content_type,
         "all_headers": all_headers
     })
-
 
 @app.route('/request-info', methods=['GET', 'POST'])
 def request_info():
@@ -543,6 +696,23 @@ def request_info():
         "content_length": request.content_length,
     })
 
+@app.route('/cache/clear', methods=['POST'])
+@limiter.limit("10 per hour")
+def clear_cache():
+    """
+    Clear all caches (admin endpoint)
+    ---
+    tags:
+      - Information
+    responses:
+      200:
+        description: Cache cleared
+    """
+    cache.clear()
+    return jsonify({
+        "message": "Cache cleared successfully",
+        "timestamp": datetime.now().isoformat()
+    })
 
 @app.errorhandler(404)
 def not_found(error):
@@ -551,11 +721,12 @@ def not_found(error):
         "error": "Endpoint not found",
         "message": "The requested endpoint does not exist",
         "available_endpoints": [
-            "/", "/home", "/about", "/api", "/health", "/predict", "/validate-loan",
-            "/history", "/statistics", "/analytics", "/model-info", "/validation-rules"
+            "/", "/app", "/health", "/predict", "/validate-loan",
+            "/history", "/statistics", "/analytics", "/model-info", 
+            "/validation-rules", "/performance", "/search", "/headers",
+            "/request-info", "/cache/clear", "/docs"
         ]
     }), 404
-
 
 @app.errorhandler(405)
 def method_not_allowed(error):
@@ -564,7 +735,6 @@ def method_not_allowed(error):
         "error": "Method not allowed",
         "message": "This endpoint does not support the requested HTTP method"
     }), 405
-
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -575,7 +745,6 @@ def internal_error(error):
         "message": "An unexpected error occurred"
     }), 500
 
-
 # Load model on startup
 with app.app_context():
     if not load_model():
@@ -584,7 +753,6 @@ with app.app_context():
 if __name__ == '__main__':
     # Get port from environment variable (Render provides this)
     port = int(os.environ.get('PORT', 5000))
-
-    #Run in production mode
-    app.run(host='0.0.0.0', port=port, debug=False)
     
+    # Run in production mode
+    app.run(host='0.0.0.0', port=port, debug=False)
