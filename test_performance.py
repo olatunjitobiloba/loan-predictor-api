@@ -7,7 +7,7 @@ import time
 import statistics
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-BASE_URL = "http://localhost:5000"  # Change to production URL for prod testing
+BASE_URL = "https://loan-predictor-api-91xu.onrender.com"  # Production URL
 
 def test_endpoint(endpoint, method='GET', data=None):
     """Test single endpoint and measure response time"""

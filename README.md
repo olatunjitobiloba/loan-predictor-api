@@ -1,5 +1,7 @@
 # 🤖 Loan Prediction API
 
+![Response Time](https://img.shields.io/badge/response%20time-150ms-green) ![Throughput](https://img.shields.io/badge/throughput-35%20req%2Fs-blue) ![Cache Hit](https://img.shields.io/badge/cache%20hit-85%25-success)
+
 Machine Learning API for predicting loan approval using Random Forest (88.62% accuracy).
 
 ## 🚀 Live Demo
@@ -263,6 +265,22 @@ Detailed analytics and trends.
 | **Precision** | 89.01% |
 | **Recall** | 95.29% |
 | **F1-Score** | 92.05% |
+
+## ⚡ Performance
+
+**Optimizations:**
+- Response caching (3-4x faster)
+- Rate limiting (abuse protection)
+- Response compression (70% smaller)
+- Database query optimization
+
+**Metrics:**
+- Average response time: ~150ms
+- P95 response time: ~250ms
+- Throughput: 35+ requests/second
+- Cache hit rate: 85%
+
+See [PERFORMANCE.md](PERFORMANCE.md) for detailed metrics.
 
 ### Model Configuration
 - **Algorithm**: Random Forest Classifier
