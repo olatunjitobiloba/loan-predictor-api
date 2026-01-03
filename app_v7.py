@@ -26,6 +26,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Preserve insertion order of dicts when returning JSON (do not sort keys)
+app.config['JSON_SORT_KEYS'] = False
+
 # Configure database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///predictions.db')
 
@@ -141,9 +144,9 @@ def load_all_models():
     global available_models, model_comparison
     
     model_files = {
+        'gradient_boosting': 'models/gradient_boosting.pkl',
         'random_forest': 'models/random_forest.pkl',
         'logistic_regression': 'models/logistic_regression.pkl',
-        'gradient_boosting': 'models/gradient_boosting.pkl',
         'support_vector_machine': 'models/support_vector_machine.pkl'
     }
     
@@ -771,6 +774,7 @@ def home():
     # (startup still opens /app via webbrowser.open in __main__).
     stats = get_statistics()
 
+    logger.debug(f"[DEBUG] model_info keys order: {list(model_info.keys())}")
     return jsonify({
         "name": "Loan Prediction API",
         "version": "7.0",
@@ -810,6 +814,27 @@ def home():
 @app.route('/app')
 def frontend():
     """Serve frontend application"""
+    # Reload model comparison so UI reflects any recent training/tuning results
+    try:
+        comp_path = os.path.join('models', 'model_comparison.json')
+        if os.path.exists(comp_path):
+            with open(comp_path, 'r', encoding='utf-8') as f:
+                comp = json.load(f)
+            # Try to populate a fresh model_info for the default model
+            comp_key = 'Random Forest'
+            info = comp.get('models', {}).get(comp_key, {})
+            local_model_info = {
+                'name': 'random_forest',
+                'accuracy': info.get('accuracy'),
+                'precision': info.get('precision'),
+                'recall': info.get('recall'),
+                'f1_score': info.get('f1_score')
+            }
+            return render_template('index.html', model_info=local_model_info)
+    except Exception:
+        # Fallback to previously loaded model_info
+        pass
+
     # Pass model_info to template so the frontend can display dynamic metadata
     return render_template('index.html', model_info=model_info)
 
@@ -932,7 +957,6 @@ def predict():
         }), 500
 
 @app.route('/models')
-@cache.cached(timeout=300)
 def list_models():
     """
     List all available models
@@ -944,13 +968,34 @@ def list_models():
         description: List of available models
     """
     models_info = {}
-    
-    for model_name in available_models.keys():
-        model_data = model_comparison.get('models', {}).get(
-            model_name.replace('_', ' ').title(), {}
-        )
+
+    # Try reloading model_comparison from disk so the UI shows latest training results
+    comp = model_comparison
+    try:
+        comp_path = os.path.join('models', 'model_comparison.json')
+        if os.path.exists(comp_path):
+            with open(comp_path, 'r', encoding='utf-8') as f:
+                comp = json.load(f)
+    except Exception:
+        comp = model_comparison
+
+    # Define explicit display order so frontend layout is predictable.
+    # We want Random Forest to appear in the middle (second card in a 3-col grid),
+    # so list models in the order below. If a model is not available, skip it.
+    display_order = [
+        'gradient_boosting',
+        'random_forest',
+        'logistic_regression',
+        'support_vector_machine'
+    ]
+
+    for model_name in display_order:
+        if model_name not in available_models:
+            continue
+        model_key = model_name.replace('_', ' ').title()
+        model_data = comp.get('models', {}).get(model_key, {})
         models_info[model_name] = {
-            'name': model_name.replace('_', ' ').title(),
+            'name': model_key,
             'loaded': True,
             'accuracy': model_data.get('accuracy'),
             'precision': model_data.get('precision'),
@@ -959,13 +1004,29 @@ def list_models():
             'training_time': model_data.get('training_time'),
             'avg_prediction_time': model_data.get('avg_prediction_time')
         }
-    
+
+    best_model_raw = comp.get('best_model', '') or ''
+    best_model_key = best_model_raw.lower().replace(' ', '_')
+
+    # Clear cached view for models so frontend sees latest comp file immediately
+    try:
+        cache.delete('view//models')
+    except Exception:
+        pass
+
     return jsonify({
         'available_models': list(available_models.keys()),
         'model_count': len(available_models),
         'default_model': 'random_forest',
-        'best_model': model_comparison.get('best_model', '').lower().replace(' ', '_'),
-        'models': models_info
+        'best_model': best_model_key,
+        'models': models_info,
+        # Provide an ordered list representation so clients can rely on display order
+        'models_list': [
+            {
+                'id': name,
+                **models_info[name]
+            } for name in models_info.keys()
+        ]
     })
 
 @app.route('/models/compare')
@@ -980,9 +1041,23 @@ def compare_models():
       200:
         description: Model comparison data
     """
+    # Try to reload model comparison from disk so UI shows freshest results
+    try:
+        comp_path = os.path.join('models', 'model_comparison.json')
+        if os.path.exists(comp_path):
+            with open(comp_path, 'r', encoding='utf-8') as f:
+                comp = json.load(f)
+            try:
+                cache.delete('view//models/compare')
+            except Exception:
+                pass
+            return jsonify(comp)
+    except Exception:
+        pass
+
     if not model_comparison:
         return jsonify({'error': 'Model comparison data not available'}), 404
-    
+
     return jsonify(model_comparison)
 
 @app.route('/predict/<model_name>', methods=['POST'])

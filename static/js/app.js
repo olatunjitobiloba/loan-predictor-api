@@ -66,41 +66,58 @@ async function loadModels() {
         modelsGrid.innerHTML = '';
         
         const bestModel = data.best_model;
-        
-        Object.entries(data.models).forEach(([modelKey, modelData]) => {
+        // Determine rendering order. Prefer ordered list from server (`models_list`),
+        // then `available_models`, then the object keys as a last resort.
+        const order = Array.isArray(data.models_list)
+            ? data.models_list.map(m => m.id)
+            : (Array.isArray(data.available_models) ? data.available_models : Object.keys(data.models || {}));
+
+        order.forEach(modelKey => {
+            // Get model data from the ordered list if present, otherwise from data.models
+            const modelData = Array.isArray(data.models_list)
+                ? (data.models_list.find(m => m.id === modelKey) || {})
+                : (data.models && data.models[modelKey] ? data.models[modelKey] : {});
+
             const isBest = modelKey === bestModel;
-            
+
+            // Safely format metrics (handle missing/null values)
+            const acc = (typeof modelData.accuracy === 'number') ? (modelData.accuracy * 100).toFixed(2) + '%' : 'N/A';
+            const prec = (typeof modelData.precision === 'number') ? (modelData.precision * 100).toFixed(2) + '%' : 'N/A';
+            const rec = (typeof modelData.recall === 'number') ? (modelData.recall * 100).toFixed(2) + '%' : 'N/A';
+            const f1 = (typeof modelData.f1_score === 'number') ? (modelData.f1_score * 100).toFixed(2) + '%' : 'N/A';
+            const predTime = (typeof modelData.avg_prediction_time === 'number') ? (modelData.avg_prediction_time * 1000).toFixed(2) + 'ms' : 'N/A';
+
             const card = document.createElement('div');
             card.className = `model-card ${isBest ? 'best' : ''}`;
             card.innerHTML = `
                 <div class="model-header">
-                    <h3 class="model-name">${modelData.name}</h3>
+                    <h3 class="model-name">${modelData.name || modelKey}</h3>
                     ${isBest ? '<span class="best-badge">🏆 BEST</span>' : ''}
                 </div>
                 <div class="model-metrics">
                     <div class="metric-row">
                         <span class="metric-label">Accuracy</span>
-                        <span class="metric-value">${(modelData.accuracy * 100).toFixed(2)}%</span>
+                        <span class="metric-value">${acc}</span>
                     </div>
                     <div class="metric-row">
                         <span class="metric-label">Precision</span>
-                        <span class="metric-value">${(modelData.precision * 100).toFixed(2)}%</span>
+                        <span class="metric-value">${prec}</span>
                     </div>
                     <div class="metric-row">
                         <span class="metric-label">Recall</span>
-                        <span class="metric-value">${(modelData.recall * 100).toFixed(2)}%</span>
+                        <span class="metric-value">${rec}</span>
                     </div>
                     <div class="metric-row">
                         <span class="metric-label">F1-Score</span>
-                        <span class="metric-value">${(modelData.f1_score * 100).toFixed(2)}%</span>
+                        <span class="metric-value">${f1}</span>
                     </div>
                     <div class="metric-row">
                         <span class="metric-label">Prediction Time</span>
-                        <span class="metric-value">${(modelData.avg_prediction_time * 1000).toFixed(2)}ms</span>
+                        <span class="metric-value">${predTime}</span>
                     </div>
                 </div>
             `;
-            
+
             modelsGrid.appendChild(card);
         });
         // Also populate the performance metrics table (best model + summary)
