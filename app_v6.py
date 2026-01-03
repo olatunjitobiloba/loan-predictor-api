@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect
 import joblib
 import pandas as pd
 import numpy as np
@@ -23,15 +23,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Configure JSON formatting for better readability
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-app.json.sort_keys = False
-
 # Configure database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 
-    'sqlite:///predictions.db'
-)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///predictions.db')
 
 if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace(
@@ -41,18 +34,9 @@ if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Configure caching
-app.config['CACHE_TYPE'] = 'simple'  # In-memory cache
-app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # 5 minutes
-
-# Initialize extensions
-cache = Cache(app)
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["1000 per day", "200 per hour"],
-    storage_uri="memory://"
-)
+# Configure Flask extensions
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+limiter = Limiter(app=app, key_func=get_remote_address, default_limits=["1000 per day", "200 per hour"], storage_uri="memory://")
 compress = Compress(app)
 
 # Initialize Swagger
@@ -252,54 +236,8 @@ def home():
     tags:
       - Information
     """
-    stats = get_statistics()
-    
-    return jsonify({
-        "name": "Loan Prediction API",
-        "version": "6.0",
-        "status": "running",
-        "model_loaded": model is not None,
-        "model_accuracy": f"{model_info.get('accuracy', 0):.2%}",
-        "database": "connected",
-        "documentation": "/docs",
-        "statistics": stats,
-        "features": {
-            "validation": "Comprehensive input validation",
-            "database": "Prediction history storage",
-            "analytics": "Usage statistics and trends",
-            "documentation": "Interactive Swagger UI",
-            "caching": "Response caching for performance",
-            "rate_limiting": "API rate limiting",
-            "compression": "Response compression"
-        },
-        "performance": {
-            "caching": "enabled",
-            "compression": "enabled",
-            "rate_limits": {
-                "default": "200 per hour, 1000 per day",
-                "predictions": "100 per hour"
-            }
-        },
-        "endpoints": {
-            "/": "API information",
-            "/app": "Frontend application",
-            "/docs": "Interactive API documentation",
-            "/health": "Health check",
-            "/predict": "Make loan prediction (POST)",
-            "/validate-loan": "Validate loan data (POST)",
-            "/history": "Recent predictions",
-            "/history/<id>": "Specific prediction",
-            "/statistics": "Overall statistics",
-            "/analytics": "Detailed analytics",
-            "/model-info": "Model details",
-            "/validation-rules": "Input validation rules",
-            "/performance": "Performance metrics",
-            "/search": "Search endpoint (GET)",
-            "/headers": "Show request headers",
-            "/request-info": "Show request metadata",
-            "/cache/clear": "Clear cache (POST)"
-        }
-    })
+    # Redirect root to the frontend while API information remains accessible at `/app`
+    return redirect('/app')
 
 @app.route('/app')
 def frontend():
@@ -307,7 +245,7 @@ def frontend():
     return render_template('index.html')
 
 @app.route('/health')
-@swag_from('docs/swagger/health.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'health.yml'))
 def health():
     """Health check endpoint"""
     return jsonify({
@@ -320,7 +258,7 @@ def health():
     })
 
 @app.route('/predict', methods=['POST'])
-@swag_from('docs/swagger/predict.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'predict.yml'))
 @limiter.limit("100 per hour")  # Stricter limit for predictions
 def predict():
     """Predict loan approval and store in database"""
@@ -476,7 +414,7 @@ def validate_loan():
         }), 500
 
 @app.route('/history')
-@swag_from('docs/swagger/history.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'history.yml'))
 @cache.cached(timeout=30, query_string=True)  # Cache for 30 seconds
 def history():
     """Get recent prediction history"""
@@ -495,7 +433,7 @@ def history():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/history/<int:prediction_id>')
-@swag_from('docs/swagger/history_id.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'history_id.yml'))
 @cache.cached(timeout=300)  # Cache for 5 minutes
 def get_prediction(prediction_id):
     """Get specific prediction by ID"""
@@ -511,7 +449,7 @@ def get_prediction(prediction_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/statistics')
-@swag_from('docs/swagger/statistics.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'statistics.yml'))
 @cache.cached(timeout=60)  # Cache for 1 minute
 def statistics():
     """Get overall statistics"""
@@ -523,7 +461,7 @@ def statistics():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/analytics')
-@swag_from('docs/swagger/analytics.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'analytics.yml'))
 @cache.cached(timeout=120)  # Cache for 2 minutes
 def analytics():
     """Get detailed analytics"""
@@ -560,7 +498,7 @@ def analytics():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/model-info')
-@swag_from('docs/swagger/model_info.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'model_info.yml'))
 @cache.cached(timeout=3600)  # Cache for 1 hour (rarely changes)
 def model_info_endpoint():
     """Return model information"""
@@ -577,7 +515,7 @@ def model_info_endpoint():
     })
 
 @app.route('/validation-rules')
-@swag_from('docs/swagger/validation_rules.yml')
+@swag_from(os.path.join(os.path.dirname(__file__), 'docs', 'swagger', 'validation_rules.yml'))
 @cache.cached(timeout=3600)  # Cache for 1 hour (rarely changes)
 def validation_rules():
     """Return validation rules"""

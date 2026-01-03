@@ -16,6 +16,7 @@ swagger_config = {
     "swagger_ui": True,
     "specs_route": "/docs"
 }
+swagger_config['doc_dir'] = 'docs/swagger'
 
 swagger_template = {
     "swagger": "2.0",
