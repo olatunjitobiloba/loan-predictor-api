@@ -11,6 +11,7 @@ import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flasgger import Swagger, swag_from
+from flask_cors import CORS
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -44,6 +45,18 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-i
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 limiter = Limiter(app=app, key_func=get_remote_address, default_limits=["1000 per day", "200 per hour"], storage_uri="memory://")
 compress = Compress(app)
+# Enable CORS for browser-based clients (Swagger UI, Postman in browser, etc.)
+# Allow all origins for documentation and development convenience; restrict in
+# production if needed.
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+# Allow wildcard by default for development; in production set CORS_ORIGINS
+# to a comma-separated list of allowed origins (e.g. https://yourdomain.com)
+if isinstance(cors_origins, str) and cors_origins.strip() != '*':
+    cors_arg = [o.strip() for o in cors_origins.split(',') if o.strip()]
+else:
+    cors_arg = '*'
+
+CORS(app, resources={r"/*": {"origins": cors_arg}}, supports_credentials=True)
 
 # Initialize Swagger
 try:
@@ -1796,6 +1809,19 @@ if __name__ == '__main__':
     except Exception:
         pass
 
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # Optional SSL: if `SSL_CERT` and `SSL_KEY` environment variables are
+    # set to paths of a certificate and private key, Flask will run with
+    # an SSL context so the API is available via HTTPS locally.
+    ssl_cert = os.environ.get('SSL_CERT')
+    ssl_key = os.environ.get('SSL_KEY')
+    ssl_context = None
+    if ssl_cert and ssl_key and os.path.exists(ssl_cert) and os.path.exists(ssl_key):
+        ssl_context = (ssl_cert, ssl_key)
+        logger.info(f"Starting server with SSL context: cert={ssl_cert}, key={ssl_key}")
+    else:
+        if ssl_cert or ssl_key:
+            logger.warning('SSL_CERT or SSL_KEY specified but files not found; starting without SSL')
+
+    app.run(host='0.0.0.0', port=port, debug=False, ssl_context=ssl_context)
 
     
