@@ -34,8 +34,12 @@ swagger_template = {
             "url": "https://opensource.org/licenses/MIT"
         }
     },
-    "host": "localhost:5000",
+    # Do not hard-code host here; leaving `host` out lets Swagger UI
+    # call the same origin from which the docs are served, avoiding
+    # localhost vs 127.0.0.1 mismatches that trigger CORS errors.
     "basePath": "/",
+    # Prefer secure scheme when docs are served over HTTPS (hosts like Render).
+    # Include both so Swagger UI uses HTTPS on deployed sites and HTTP locally.
     "schemes": [
         "https",
         "http"

@@ -8,6 +8,7 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flasgger import Swagger, swag_from
+from flask_cors import CORS
 
 from validators import LoanApplicationValidator
 from database import db, init_db, Prediction, get_recent_predictions, get_statistics, update_daily_stats
@@ -64,6 +65,17 @@ model = None
 feature_names = []
 model_info = {}
 validator = LoanApplicationValidator()
+
+# Enable CORS so the Swagger UI (which may be served from a different
+# origin) can call the API without browser CORS errors. In production you
+# can restrict `origins` to trusted domains.
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+if isinstance(cors_origins, str) and cors_origins.strip() != '*':
+    cors_arg = [o.strip() for o in cors_origins.split(',') if o.strip()]
+else:
+    cors_arg = '*'
+
+CORS(app, resources={r"/*": {"origins": cors_arg}}, supports_credentials=True)
 
 def load_model():
     """Load the trained model and metadata on startup"""

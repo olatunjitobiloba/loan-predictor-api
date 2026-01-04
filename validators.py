@@ -110,7 +110,44 @@ class LoanApplicationValidator:
         
         value = data[field]
 
-        # Check if value is valid
+        # Normalize common variants so callers (Swagger / Postman / clients)
+        # can send booleans, ints, or different casing and still pass.
+        # Map booleans to 'Yes'/'No' when appropriate; coerce numeric
+        # dependents to strings; perform case-insensitive matching.
+        try:
+            # Booleans -> Yes/No (useful for Swagger examples that use true/false)
+            if isinstance(value, bool):
+                if 'Yes' in valid_values and 'No' in valid_values:
+                    value = 'Yes' if value else 'No'
+                else:
+                    # Fall back to string form of boolean
+                    value = str(value)
+
+            # Numeric dependents (e.g., 0) -> '0', or other numeric->str
+            elif isinstance(value, (int, float)):
+                # For dependents, keep as simple integer string
+                value = str(int(value)) if field == 'Dependents' else str(value)
+
+            # Strings: trim and try case-insensitive match against valid_values
+            elif isinstance(value, str):
+                v = value.strip()
+                lower_vals = [vv.lower() for vv in valid_values]
+                if v.lower() in ('true', 'false') and ('Yes' in valid_values or 'No' in valid_values):
+                    value = 'Yes' if v.lower() == 'true' else 'No'
+                elif v.lower() in lower_vals:
+                    # Map back to canonical casing from valid_values
+                    value = valid_values[lower_vals.index(v.lower())]
+                else:
+                    value = v
+
+            # Update the original data with the normalized value so later
+            # processing sees the canonical form.
+            data[field] = value
+        except Exception:
+            # If normalization fails for any reason, just leave value as-is
+            data[field] = data.get(field)
+
+        # Check if value is valid (after normalization)
         if value not in valid_values:
             return False, f"{field} must be one of: {','.join(valid_values)}"
         
