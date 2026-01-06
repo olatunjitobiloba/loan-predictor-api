@@ -1,5 +1,20 @@
 # 🤖 Loan Prediction API
+Add at the top of your main README:
 
+
+
+
+[![Demo Video](https://img.shields.io/badge/▶️-Watch%20Demo-red?style=for-the-badge&logo=youtube)](YOUR_YOUTUBE_LINK)
+[![Live Demo](https://img.shields.io/badge/🌐-Live%20Demo-blue?style=for-the-badge)](https://loan-predictor-api-91xu.onrender.com/app)
+[![API Docs](https://img.shields.io/badge/📚-API%20Docs-green?style=for-the-badge)](https://loan-predictor-api-91xu.onrender.com/docs)
+
+> Production-ready AI loan prediction system with 88.62% accuracy, 4 ML models, and comprehensive API
+
+## 🎥 Demo Video
+
+[![Watch Demo](portfolio/screenshots/01-homepage-hero.png)](YOUR_YOUTUBE_LINK)
+
+**[▶️ Watch 3-minute demo video](YOUR_YOUTUBE_LINK)**
 ![Response Time](https://img.shields.io/badge/response%20time-150ms-green) ![Throughput](https://img.shields.io/badge/throughput-35%20req%2Fs-blue) ![Cache Hit](https://img.shields.io/badge/cache%20hit-85%25-success)
 
 Machine Learning API for predicting loan approval using Random Forest (88.62% accuracy).
