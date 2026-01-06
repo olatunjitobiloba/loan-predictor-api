@@ -1,6 +1,5 @@
 # Auto-detect text files and normalize them
 * text=auto
-
 # Force LF in the repository for common text files
 *.py text eol=lf
 *.ipynb text eol=lf
@@ -11,4 +10,5 @@
 *.jpeg binary
 *.gif binary
 *.pdf binary
+portfolio/video/*.mp4 filter=lfs diff=lfs merge=lfs -text
 *.mp4 filter=lfs diff=lfs merge=lfs -text
