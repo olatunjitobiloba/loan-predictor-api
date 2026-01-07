@@ -1,7 +1,19 @@
-# 🤖 Loan Prediction API
+#  Loan Prediction API
 Add at the top of your main README:
 
 
+##  Blog Post
+
+**[Read the full technical deep-dive →](https://medium.com/@olatunjitobiloba05/building-a-production-ready-ai-loan-prediction-system-a-15-day-journey-3a43cb87170f)**
+
+I wrote a comprehensive 3,000-word article covering:
+- System architecture and design decisions
+- Feature engineering techniques
+- Performance optimization strategies
+- Production deployment challenges
+- Lessons learned
+
+Published on Medium | Dev.to
 
 
 [![Demo Video](https://img.shields.io/badge/▶️-Watch%20Demo-red?style=for-the-badge&logo=youtube)](YOUR_YOUTUBE_LINK)
