@@ -6,15 +6,15 @@
 
 ---
 
-## TL;DR
+## THE JOURNEY
 
 In 15 days, I built a production-ready loan prediction system featuring:
-- 🤖 **4 ML models** with 88.62% best accuracy
-- 🔧 **REST API** with Flask and PostgreSQL
-- 🧪 **83% test coverage** with pytest
-- 📚 **Professional Swagger documentation**
-- ⚡ **3-4x performance optimization**
-- 🌐 **Live deployment** on Render
+-  **4 ML models** with 88.62% best accuracy
+-  **REST API** with Flask and PostgreSQL
+-  **83% test coverage** with pytest
+-  **Professional Swagger documentation**
+-  **3-4x performance optimization**
+-  **Live deployment** on Render
 
 **[Live Demo](https://loan-predictor-api-91xu.onrender.com/app)** | **[GitHub](https://github.com/olatunjitobiloba/loan-predictor-api)** | **[API Docs](https://loan-predictor-api-91xu.onrender.com/docs)**
 
@@ -42,7 +42,7 @@ Three weeks ago, I had an idea: **build a production-grade machine learning syst
 
 The result? A loan prediction API that's currently serving real predictions with **88.62% accuracy**, complete with professional documentation, comprehensive testing, and performance optimizations that make it **3-4x faster** than the initial version.
 
-![Homepage Screenshot](portfolio/screenshots/01-homepage-hero.png)
+![Homepage Screenshot](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/01-homepage-hero.png)
 *The landing page showing live statistics and model performance*
 
 This post is a technical deep-dive into how I built it, the challenges I faced, and the lessons I learned along the way.
@@ -97,7 +97,7 @@ The system follows a **layered architecture pattern**:
 └────────────┘  └────────────┘
 ```
 
-![Architecture Diagram](portfolio/screenshots/architecture-diagram.png)
+![Architecture Diagram](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/diagrams/architecture.png)
 *High-level system architecture showing separation of concerns*
 
 **Tech Stack:**
@@ -145,7 +145,7 @@ The dataset had **614 loan applications** with **12 features**:
 - Income and loan amount had right-skewed distributions
 - Missing values in multiple columns (~10-15%)
 
-![EDA Visualization](portfolio/screenshots/eda-analysis.png)
+![EDA Visualization](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/visualizations/eda_plots/11_correlation_heatmap.png)
 *Exploratory data analysis showing feature distributions and correlations*
 
 ### Day 3-4: Data Preprocessing & Feature Engineering
@@ -202,8 +202,8 @@ model.fit(X_train, y_train)
 - Recall: **0.96**
 - F1-Score: **0.92**
 
-![Model Performance](portfolio/screenshots/model-metrics.png)
-*Confusion matrix and classification report for Random Forest model*
+![Model Performance](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/12-performance-metrics.png)
+*Performance metrics for Random Forest model*
 
 ---
 
@@ -239,7 +239,7 @@ class LoanApplicationValidator:
 
 This prevented bad predictions and improved user experience.
 
-![Validation Error](portfolio/screenshots/validation-error.png)
+![Varror](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/08-result-rejected.png)
 *User-friendly validation error messages in the UI*
 
 ### Day 9-10: Database Integration
@@ -271,7 +271,7 @@ class Prediction(db.Model):
 
 This enabled analytics and monitoring.
 
-![Prediction History](portfolio/screenshots/prediction-history.png)
+![Prediction History](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/11-statistics.png)
 *Database-backed prediction history with filtering and pagination*
 
 ### Day 11-12: Testing
@@ -304,7 +304,7 @@ def test_predict_validation_error(client):
     assert 'validation_errors' in response.json
 ```
 
-![Test Coverage](portfolio/screenshots/test-coverage.png)
+![Test Coverage](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/01-homepage-hero.png)
 *pytest coverage report showing 83% code coverage*
 
 ### Day 13: Deployment
@@ -364,7 +364,7 @@ async function makePrediction() {
 - Immediate feedback
 - Error handling with helpful messages
 
-![Responsive Design](portfolio/screenshots/responsive-design.png)
+![Responsive Design](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/13-mobile-view.png)
 *Mobile and desktop views showing responsive layout*
 
 ### Day 15: API Documentation
@@ -385,7 +385,7 @@ def predict():
 
 This made the API self-documenting and easy to test.
 
-![Swagger Documentation](portfolio/screenshots/03-swagger-ui.png)
+![Swagger Documentation](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/03-swagger-ui.png)
 *Interactive API documentation with Swagger UI*
 
 ### Day 16: Performance Optimization
@@ -432,7 +432,7 @@ Trained and compared 4 different models:
 
 Random Forest won on accuracy, but Logistic Regression was **23x faster** to train.
 
-![Model Comparison](portfolio/screenshots/09-model-comparison.png)
+![Model Comparison](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/09-model-comparison.png)
 *Side-by-side comparison of four different ML models*
 
 Added model comparison endpoint:
@@ -457,7 +457,7 @@ def benchmark_models():
 
 Created comprehensive portfolio assets:
 
-- 5-minute demo video
+- 2-minute demo video
 - 15+ screenshots
 - Architecture diagrams
 - Technical documentation
@@ -488,7 +488,7 @@ feature_importance_df = pd.DataFrame({
 print(feature_importance_df.head(10))
 ```
 
-![Feature Importance](portfolio/screenshots/feature-importance.png)
+![Feature Importance](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/screenshots/feature_importance_chart.png)
 *Feature importance chart showing engineered features in top 5*
 
 ### 2. Handling Class Imbalance
@@ -688,7 +688,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 ```
 
-![Performance Metrics](portfolio/screenshots/performance-metrics.png)
+![Performance Metrics](https://raw.githubusercontent.com/olatunjitobiloba/loan-predictor-api/main/portfolio/screenshots/12-performance-metrics.png)
 *Response time comparison before and after optimization*
 
 ---
@@ -773,13 +773,13 @@ The model was working on Day 5. Making it production-ready took 13 more days.
 
 But that's what separates a Jupyter notebook from a real product:
 
-✅ Comprehensive testing  
-✅ Professional documentation  
-✅ Performance optimization  
-✅ Error handling  
-✅ Monitoring and logging  
-✅ Security considerations  
-✅ User experience  
+ Comprehensive testing  
+ Professional documentation  
+ Performance optimization  
+ Error handling  
+ Monitoring and logging  
+ Security considerations  
+ User experience  
 
 If you're building an ML system, focus on these fundamentals. The fancy algorithms can wait.
 
@@ -789,14 +789,14 @@ If you're building an ML system, focus on these fundamentals. The fancy algorith
 
 - **Live Demo:** [https://loan-predictor-api-91xu.onrender.com/app](https://loan-predictor-api-91xu.onrender.com/app)
 - **API Documentation:** [https://loan-predictor-api-91xu.onrender.com/docs](https://loan-predictor-api-91xu.onrender.com/docs)
-- **GitHub Repository:** [Your Repo URL]
-- **Demo Video:** [Your Video URL]
+- **GitHub Repository:** [https://github.com/olatunjitobiloba/loan-predictor-api]
+- **Demo Video:** [https://www.youtube.com/watch?v=4NUUZVpKvy8]
 
 ### Connect with me:
 
-- **LinkedIn:** [Your LinkedIn]
+- **LinkedIn:** [https://www.linkedin.com/in/olatunjioluwatobiloba/]
 - **GitHub:** [https://github.com/olatunjitobiloba](https://github.com/olatunjitobiloba)
-- **Email:** [Your Email]
+- **Email:** [olatunjitobiloba05@gmail.com]
 
 ---
 
