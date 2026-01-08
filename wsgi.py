@@ -11,9 +11,9 @@ if project_home not in sys.path:
     sys.path = [project_home] + sys.path
 
 # Set environment variables
-os.environ[
-    "DATABASE_URL"
-] = "sqlite:////home/loanpredictorapi/loan-predictor-api/predictions.db"
+os.environ["DATABASE_URL"] = (
+    "sqlite:////home/loanpredictorapi/loan-predictor-api/predictions.db"
+)
 os.environ["SECRET_KEY"] = "your-secret-key-here"
 
 # Import Flask app from app_v5.py (import intentionally after env setup)

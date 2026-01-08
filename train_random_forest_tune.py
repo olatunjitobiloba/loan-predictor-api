@@ -5,10 +5,10 @@ import os
 
 import joblib
 import pandas as pd
+
 # from scipy.stats import randint  # not used
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (accuracy_score, f1_score, precision_score,
-                             recall_score)
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 
 from preprocess import preprocess_loan_data

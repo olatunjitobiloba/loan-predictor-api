@@ -12,8 +12,14 @@ from flasgger import Swagger, swag_from
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
-from database import (Prediction, db, get_recent_predictions, get_statistics,
-                      init_db, update_daily_stats)
+from database import (
+    Prediction,
+    db,
+    get_recent_predictions,
+    get_statistics,
+    init_db,
+    update_daily_stats,
+)
 from docs.swagger.config import swagger_config, swagger_template
 from validators import LoanApplicationValidator
 
