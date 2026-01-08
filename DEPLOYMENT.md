@@ -340,6 +340,7 @@ Share this URL to:
 - **Render Community:** https://community.render.com
 - **GitHub:** [Your repository URL]
 - **API Documentation:** See README.md
+ - **PitchHut Project:** https://www.pitchhut.com/project/loan-predictor-api
 
 ---
 

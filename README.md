@@ -2,7 +2,7 @@
 
 Production-ready AI loan prediction system with multiple trained models and a lightweight REST API for making loan approval predictions.
 
-[Live Demo](https://loan-predictor-api-91xu.onrender.com/app) • [API Docs](https://loan-predictor-api-91xu.onrender.com/docs)
+[Live Demo](https://loan-predictor-api-91xu.onrender.com/app) • [API Docs](https://loan-predictor-api-91xu.onrender.com/docs) • [PitchHut Project](https://www.pitchhut.com/project/loan-predictor-api)
 
 ## 🚀 Quick Start
 
