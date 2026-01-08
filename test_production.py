@@ -3,19 +3,19 @@ Test production API deployment
 """
 
 import requests
-import json
 
 # CHANGE THIS to your actual Render URL
 PRODUCTION_URL = "https://loan-predictor-api-91xu.onrender.com"
 
+
 def test_production_api():
     """Comprehensive production API test"""
-    
-    print("="*70)
+
+    print("=" * 70)
     print("PRODUCTION API TEST SUITE")
     print(f"Testing: {PRODUCTION_URL}")
-    print("="*70)
-    
+    print("=" * 70)
+
     # Test 1: Health check
     print("\n1. Testing health endpoint...")
     try:
@@ -29,7 +29,7 @@ def test_production_api():
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
         return False
-    
+
     # Test 2: API info
     print("\n2. Testing API info endpoint...")
     try:
@@ -43,7 +43,7 @@ def test_production_api():
             print(f"   ❌ Failed: {response.status_code}")
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
-    
+
     # Test 3: Model info
     print("\n3. Testing model info endpoint...")
     try:
@@ -57,7 +57,7 @@ def test_production_api():
             print(f"   ❌ Failed: {response.status_code}")
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
-    
+
     # Test 4: Make prediction
     print("\n4. Testing prediction endpoint...")
     test_data = {
@@ -71,17 +71,17 @@ def test_production_api():
         "Dependents": "0",
         "Education": "Graduate",
         "Self_Employed": "No",
-        "Property_Area": "Urban"
+        "Property_Area": "Urban",
     }
-    
+
     try:
         response = requests.post(
             f"{PRODUCTION_URL}/predict",
             json=test_data,
             headers={"Content-Type": "application/json"},
-            timeout=15
+            timeout=15,
         )
-        
+
         if response.status_code == 200:
             data = response.json()
             print("   ✅ Prediction successful")
@@ -93,27 +93,27 @@ def test_production_api():
             print(f"   Response: {response.json()}")
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
-    
+
     # Test 5: Validation (should fail)
     print("\n5. Testing validation (negative test)...")
     invalid_data = {"ApplicantIncome": -5000}
-    
+
     try:
         response = requests.post(
             f"{PRODUCTION_URL}/predict",
             json=invalid_data,
             headers={"Content-Type": "application/json"},
-            timeout=10
+            timeout=10,
         )
-        
+
         if response.status_code == 400:
             print("   ✅ Validation correctly rejected invalid data")
             print(f"   Error: {response.json().get('validation_errors')}")
         else:
-            print(f"   ❌ Validation failed to catch error")
+            print("   ❌ Validation failed to catch error")
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
-    
+
     # Test 6: Statistics
     print("\n6. Testing statistics endpoint...")
     try:
@@ -127,7 +127,7 @@ def test_production_api():
             print(f"   ❌ Failed: {response.status_code}")
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
-    
+
     # Test 7: History
     print("\n7. Testing history endpoint...")
     try:
@@ -140,14 +140,15 @@ def test_production_api():
             print(f"   ❌ Failed: {response.status_code}")
     except Exception as e:
         print(f"   ❌ Error: {str(e)}")
-    
-    print("\n" + "="*70)
+
+    print("\n" + "=" * 70)
     print("✅ PRODUCTION API TEST COMPLETE")
-    print("="*70)
+    print("=" * 70)
     print(f"\n🎉 Your API is LIVE at: {PRODUCTION_URL}")
     print("\nShare this URL to demonstrate your project!")
-    
+
     return True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_production_api()

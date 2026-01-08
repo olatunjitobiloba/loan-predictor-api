@@ -1,5 +1,3 @@
-Health check endpoint
----
 tags:
   - Health
 responses:
