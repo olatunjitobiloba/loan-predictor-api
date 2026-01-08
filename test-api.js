@@ -23,11 +23,11 @@ console.log('Testing production API...\n');
 
 const req = https.request(options, (res) => {
   let body = '';
-  
+
   res.on('data', (chunk) => {
     body += chunk;
   });
-  
+
   res.on('end', () => {
     try {
       const result = JSON.parse(body);

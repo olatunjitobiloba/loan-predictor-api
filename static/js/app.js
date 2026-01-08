@@ -1,57 +1,73 @@
 // API Base URL - Use relative URL for localhost, full URL for production
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? '' 
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
     : 'https://loan-predictor-api-91xu.onrender.com';
 
 // Load statistics and models on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadStatistics();
-    loadTotalPredictions();
     loadModels();
 });
 
 // Load statistics
 async function loadStatistics() {
     try {
-        const response = await fetch(`${API_URL}/statistics`);
+        const response = await fetch(`${API_URL}/statistics`, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' },
+        });
         const data = await response.json();
-        
+
         document.getElementById('stats-total').textContent = data.total_predictions;
         document.getElementById('stats-approved').textContent = data.approved;
         document.getElementById('stats-rejected').textContent = data.rejected;
         document.getElementById('stats-rate').textContent = data.approval_rate;
-        document.getElementById('total-predictions').textContent = data.total_predictions;
+        // Animate the hero "total-predictions" from its current displayed value
+        animateNumber('total-predictions', data.total_predictions);
     } catch (error) {
         console.error('Error loading statistics:', error);
         document.getElementById('stats-total').textContent = 'Error';
     }
 }
 
-// Load total predictions for hero
-async function loadTotalPredictions() {
-    try {
-        const response = await fetch(`${API_URL}/statistics`);
-        const data = await response.json();
-        animateNumber('total-predictions', data.total_predictions);
-    } catch (error) {
-        console.error('Error loading total predictions:', error);
-    }
-}
-
-// Animate number counting
-function animateNumber(elementId, targetNumber) {
+// Animate number counting (smooth, from current displayed value)
+const _numberAnimations = new Map();
+function animateNumber(elementId, targetNumber, duration = 800) {
     const element = document.getElementById(elementId);
-    let current = 0;
-    const increment = targetNumber / 50;
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= targetNumber) {
-            element.textContent = targetNumber;
-            clearInterval(timer);
+    if (!element) return;
+
+    // Parse current displayed number or default to 0
+    const raw = (element.textContent || '').trim();
+    const parsed = parseInt(raw.replace(/[^0-9\-]/g, ''), 10);
+    const from = Number.isFinite(parsed) ? parsed : 0;
+    const to = Number(targetNumber) || 0;
+    if (from === to) return;
+
+    // Cancel any existing animation for this element
+    if (_numberAnimations.has(elementId)) {
+        cancelAnimationFrame(_numberAnimations.get(elementId));
+        _numberAnimations.delete(elementId);
+    }
+
+    const startTime = performance.now();
+    const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+    function frame(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        const eased = easeInOut(t);
+        const current = Math.round(from + (to - from) * eased);
+        element.textContent = current;
+        if (t < 1) {
+            const raf = requestAnimationFrame(frame);
+            _numberAnimations.set(elementId, raf);
         } else {
-            element.textContent = Math.floor(current);
+            element.textContent = to;
+            _numberAnimations.delete(elementId);
         }
-    }, 20);
+    }
+
+    const raf = requestAnimationFrame(frame);
+    _numberAnimations.set(elementId, raf);
 }
 
 // Load and display available models
@@ -59,12 +75,12 @@ async function loadModels() {
     try {
         const response = await fetch(`${API_URL}/models`);
         const data = await response.json();
-        
+
         const modelsGrid = document.getElementById('models-grid');
         if (!modelsGrid) return; // Exit if element doesn't exist
-        
+
         modelsGrid.innerHTML = '';
-        
+
         const bestModel = data.best_model;
         // Determine rendering order. Prefer ordered list from server (`models_list`),
         // then `available_models`, then the object keys as a last resort.
@@ -209,7 +225,7 @@ function renderMetricsTable(models, bestModelKey) {
 async function benchmarkModels() {
     const formData = new FormData(document.getElementById('prediction-form'));
     const data = {};
-    
+
     formData.forEach((value, key) => {
         if (['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term', 'Credit_History'].includes(key)) {
             data[key] = value ? parseFloat(value) : undefined;
@@ -217,29 +233,29 @@ async function benchmarkModels() {
             data[key] = value;
         }
     });
-    
+
     // Check if form has required data
     if (!data.ApplicantIncome) {
         alert('Please fill in at least the Applicant Income field');
         return;
     }
-    
+
     // Show loading state
     const benchmarkBtn = document.getElementById('benchmark-btn');
     if (benchmarkBtn) {
         benchmarkBtn.disabled = true;
         benchmarkBtn.textContent = 'Running Benchmark...';
     }
-    
+
     try {
         const response = await fetch(`${API_URL}/models/benchmark`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
             displayBenchmarkResults(result);
         } else {
@@ -261,11 +277,11 @@ async function benchmarkModels() {
 function displayBenchmarkResults(result) {
     const container = document.getElementById('benchmark-results');
     if (!container) return;
-    
+
     container.style.display = 'block';
-    
+
     let html = '<h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">Benchmark Results</h3>';
-    
+
     // Consensus
     const consensusColor = result.consensus.prediction === 'Approved' ? 'var(--success-color)' : 'var(--danger-color)';
     html += `
@@ -279,14 +295,14 @@ function displayBenchmarkResults(result) {
             </div>
         </div>
     `;
-    
+
     // Individual results
     html += '<div class="benchmark-results-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">';
     Object.entries(result.results).forEach(([modelName, modelResult]) => {
         const isApproved = modelResult.prediction === 'Approved';
         const borderColor = isApproved ? 'var(--success-color)' : 'var(--danger-color)';
         const predictionColor = isApproved ? 'var(--success-color)' : 'var(--danger-color)';
-        
+
         html += `
             <div class="benchmark-result-card" style="background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 2px solid ${borderColor}; transition: transform 0.3s ease;">
                 <h4 style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--text-primary);">
@@ -305,7 +321,7 @@ function displayBenchmarkResults(result) {
         `;
     });
     html += '</div>';
-    
+
     container.innerHTML = html;
     container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -313,11 +329,11 @@ function displayBenchmarkResults(result) {
 // Handle form submission
 document.getElementById('prediction-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
+
     // Get form data
     const formData = new FormData(e.target);
     const data = {};
-    
+
     formData.forEach((value, key) => {
         // Convert numeric fields
         if (['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term', 'Credit_History'].includes(key)) {
@@ -326,16 +342,16 @@ document.getElementById('prediction-form').addEventListener('submit', async func
             data[key] = value;
         }
     });
-    
+
     // Show loading state
     const submitBtn = document.getElementById('submit-btn');
     const submitText = document.getElementById('submit-text');
     const submitLoader = document.getElementById('submit-loader');
-    
+
     submitBtn.disabled = true;
     submitText.style.display = 'none';
     submitLoader.style.display = 'block';
-    
+
     try {
         // Make prediction
         const response = await fetch(`${API_URL}/predict`, {
@@ -345,13 +361,13 @@ document.getElementById('prediction-form').addEventListener('submit', async func
             },
             body: JSON.stringify(data)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
             // Show results
             displayResults(result);
-            
+
             // Reload statistics
             loadStatistics();
         } else {
@@ -376,14 +392,14 @@ function displayResults(result) {
     const resultIcon = document.getElementById('result-icon');
     const resultTitle = document.getElementById('result-title');
     const resultSubtitle = document.getElementById('result-subtitle');
-    
+
     // Show results container
     resultsContainer.style.display = 'block';
     resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    
+
     // Set result based on prediction
     const isApproved = result.prediction === 'Approved';
-    
+
     if (isApproved) {
         resultIcon.textContent = '✓';
         resultIcon.classList.remove('rejected');
@@ -397,26 +413,26 @@ function displayResults(result) {
         resultTitle.style.color = 'var(--danger-color)';
         resultSubtitle.textContent = 'Unfortunately, your loan application is likely to be rejected.';
     }
-    
+
     // Set confidence
     const confidence = (result.confidence * 100).toFixed(1);
     document.getElementById('confidence-value').textContent = confidence + '%';
     document.getElementById('confidence-fill').style.width = confidence + '%';
-    
+
     // Set probabilities
     const approvalProb = (result.probability.approved * 100).toFixed(1);
     const rejectionProb = (result.probability.rejected * 100).toFixed(1);
-    
+
     document.getElementById('approval-prob').textContent = approvalProb + '%';
     document.getElementById('approval-fill').style.width = approvalProb + '%';
-    
+
     document.getElementById('rejection-prob').textContent = rejectionProb + '%';
     document.getElementById('rejection-fill').style.width = rejectionProb + '%';
-    
+
     // Show warnings if any
     const warningsContainer = document.getElementById('warnings-container');
     const warningsList = document.getElementById('warnings-list');
-    
+
     if (result.warnings && result.warnings.length > 0) {
         warningsContainer.style.display = 'block';
         warningsList.innerHTML = '';
@@ -434,13 +450,13 @@ function displayResults(result) {
 function resetForm() {
     document.getElementById('prediction-form').reset();
     document.getElementById('results-container').style.display = 'none';
-    
+
     // Hide benchmark results if visible
     const benchmarkResults = document.getElementById('benchmark-results');
     if (benchmarkResults) {
         benchmarkResults.style.display = 'none';
     }
-    
+
     document.getElementById('predict').scrollIntoView({ behavior: 'smooth' });
 }
 

@@ -1,4 +1,3 @@
-import json
 import pytest
 
 from app_v7 import app
@@ -17,7 +16,7 @@ def test_predict_endpoint_returns_expected_structure(client):
         "CoapplicantIncome": 0,
         "LoanAmount": 100,
         "Credit_History": 1,
-        "Education": "Graduate"
+        "Education": "Graduate",
     }
 
     resp = client.post("/predict", json=payload)

@@ -672,15 +672,15 @@ body {
     .hero-title {
         font-size: 2rem;
     }
-    
+
     .prediction-container {
         grid-template-columns: 1fr;
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .nav {
         display: none;
     }

@@ -219,21 +219,21 @@ class LoanApplicationValidator:
     MAX_INCOME = 100000
     MIN_LOAN_AMOUNT = 0
     MAX_LOAN_AMOUNT = 10000
-    
+
     def validate_loan_application(self, data):
         errors = []
         warnings = []
-        
+
         # Required field validation
         if 'ApplicantIncome' not in data:
             errors.append("ApplicantIncome is required")
         elif data['ApplicantIncome'] <= self.MIN_INCOME:
             errors.append("ApplicantIncome must be greater than 0")
-        
+
         # Range validation
         if data.get('LoanAmount', 0) > self.MAX_LOAN_AMOUNT:
             warnings.append("Loan amount is unusually high")
-        
+
         return len(errors) == 0, errors, warnings
 ```
 
@@ -257,7 +257,7 @@ class Prediction(db.Model):
     prediction = db.Column(db.String(20))
     confidence = db.Column(db.Float)
     input_data = db.Column(db.JSON)
-    
+
     @classmethod
     def from_request(cls, input_data, result, warnings, ip):
         return cls(
@@ -286,9 +286,9 @@ def test_predict_success(client):
         "LoanAmount": 150,
         "Credit_History": 1
     }
-    
+
     response = client.post('/predict', json=data)
-    
+
     assert response.status_code == 200
     assert 'prediction' in response.json
     assert response.json['prediction'] in ['Approved', 'Rejected']
@@ -297,9 +297,9 @@ def test_predict_success(client):
 def test_predict_validation_error(client):
     """Test validation error handling"""
     data = {"ApplicantIncome": -1000}  # Invalid
-    
+
     response = client.post('/predict', json=data)
-    
+
     assert response.status_code == 400
     assert 'validation_errors' in response.json
 ```
@@ -345,13 +345,13 @@ async function makePrediction() {
         LoanAmount: parseFloat(document.getElementById('loan').value),
         Credit_History: parseInt(document.getElementById('credit').value)
     };
-    
+
     const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     });
-    
+
     const result = await response.json();
     displayResult(result);
 }
@@ -442,14 +442,14 @@ Added model comparison endpoint:
 def benchmark_models():
     """Test all models with same input"""
     results = {}
-    
+
     for model_name, model in available_models.items():
         prediction = model.predict(df_processed)[0]
         results[model_name] = {
             'prediction': 'Approved' if prediction == 1 else 'Rejected',
             'confidence': float(max(model.predict_proba(df_processed)[0]))
         }
-    
+
     return jsonify(results)
 ```
 
@@ -499,8 +499,8 @@ The dataset had **69% approvals** vs **31% rejections**.
 
 ```python
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, 
-    test_size=0.2, 
+    X, y,
+    test_size=0.2,
     random_state=42,
     stratify=y  # Maintains class distribution
 )
@@ -606,10 +606,10 @@ def preprocess_input(data):
     # Provide sensible defaults
     if 'LoanAmount' not in data or pd.isna(data['LoanAmount']):
         data['LoanAmount'] = 128.0  # Median from training
-    
+
     if 'Credit_History' not in data:
         data['Credit_History'] = 1.0  # Most common value
-    
+
     return data
 ```
 
@@ -773,13 +773,13 @@ The model was working on Day 5. Making it production-ready took 13 more days.
 
 But that's what separates a Jupyter notebook from a real product:
 
- Comprehensive testing  
- Professional documentation  
- Performance optimization  
- Error handling  
- Monitoring and logging  
- Security considerations  
- User experience  
+ Comprehensive testing
+ Professional documentation
+ Performance optimization
+ Error handling
+ Monitoring and logging
+ Security considerations
+ User experience
 
 If you're building an ML system, focus on these fundamentals. The fancy algorithms can wait.
 

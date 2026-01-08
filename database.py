@@ -2,24 +2,30 @@
 Database models and operationns for Loan Prediction API
 """
 
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timezone
 import json
+from datetime import datetime, timezone
+from typing import Any, Dict
+
+from flask_sqlalchemy import SQLAlchemy
+
+from utils import apply_defaults
 
 db = SQLAlchemy()
 
-class Prediction(db.Model):
+
+class Prediction(db.Model):  # type: ignore[name-defined]
     """Model for storing prediction history"""
 
-    __tablename__ = 'predictions'
+    __tablename__ = "predictions"
 
     # Primary key
     id = db.Column(db.Integer, primary_key=True)
 
     # Timestamp
-    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
-                          nullable=False)
-    
+    timestamp = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
     # Input features (numeric)
     applicant_income = db.Column(db.Float, nullable=False)
     coapplicant_income = db.Column(db.Float, default=0)
@@ -36,110 +42,133 @@ class Prediction(db.Model):
     property_area = db.Column(db.String(20))
 
     # Prediction results
-    prediction = db.Column(db.String(20), nullable=False) # Approved/Rejected
-    prediction_code = db.Column(db.Integer, nullable=False) # 1/0
+    prediction = db.Column(db.String(20), nullable=False)  # Approved/Rejected
+    prediction_code = db.Column(db.Integer, nullable=False)  # 1/0
     confidence = db.Column(db.Float, nullable=False)
     probability_approved = db.Column(db.Float, nullable=False)
     probability_rejected = db.Column(db.Float, nullable=False)
 
     # Metadata
-    model_version = db.Column(db.String(10), default='2.0')
+    model_version = db.Column(db.String(10), default="2.0")
     had_warnings = db.Column(db.Boolean, default=False)
-    warnings = db.Column(db.Text) # JSON string of warnings
+    warnings = db.Column(db.Text)  # JSON string of warnings
 
     # Request metadata
     ip_address = db.Column(db.String(50))
 
     def __repr__(self):
-        return f'<Prediction {self.id}: {self.prediction}({self.confidence:.2%})>'
-    
+        return f"<Prediction {self.id}: {self.prediction}({self.confidence:.2%})>"
+
     def to_dict(self):
         """Convert prediction to dictionary"""
         return {
-            'id': self.id,
-            'timestamp': self.timestamp.isoformat(),
-            'input': {
-                'applicant_income': self.applicant_income,
-                'coapplicant_income': self.coapplicant_income,
-                'loan_amount': self.loan_amount,
-                'loan_amount_term': self.loan_amount_term,
-                'credit_history': self.credit_history,
-                'gender': self.gender,
-                'married': self.married,
-                'dependents': self.dependents,
-                'education': self.education,
-                'self_employed': self.self_employed,
-                'property_area': self.property_area
+            "id": self.id,
+            "timestamp": self.timestamp.isoformat(),
+            "input": {
+                "applicant_income": self.applicant_income,
+                "coapplicant_income": self.coapplicant_income,
+                "loan_amount": self.loan_amount,
+                "loan_amount_term": self.loan_amount_term,
+                "credit_history": self.credit_history,
+                "gender": self.gender,
+                "married": self.married,
+                "dependents": self.dependents,
+                "education": self.education,
+                "self_employed": self.self_employed,
+                "property_area": self.property_area,
             },
-            'prediction': self.prediction,
-            'confidence': self.confidence,
-            'probability': {
-                'approved': self.probability_approved,
-                'rejected': self.probability_rejected
+            "prediction": self.prediction,
+            "confidence": self.confidence,
+            "probability": {
+                "approved": self.probability_approved,
+                "rejected": self.probability_rejected,
             },
-            'model_version': self.model_version,
-            'had_warnings': self.had_warnings,
-            'warnings': json.loads(self.warnings) if self.warnings else []
+            "model_version": self.model_version,
+            "had_warnings": self.had_warnings,
+            "warnings": json.loads(self.warnings) if self.warnings else [],
         }
-    
+
     @staticmethod
-    def from_request(data, prediction_result, warnings=None, 
-                     ip_address=None):
+    def from_request(data, prediction_result, warnings=None, ip_address=None):
         """Create Prediction object from request data and prediction
         result"""
+        # Apply defaults to ensure DB non-nullable fields are set
+        normalized = apply_defaults(data or {})
+
+        def _to_float(x, default=0.0):
+            try:
+                return float(x) if x is not None else default
+            except Exception:
+                return default
+
+        applicant_income = _to_float(normalized.get("ApplicantIncome", 0.0))
+        coapplicant_income = _to_float(normalized.get("CoapplicantIncome", 0.0))
+        loan_amount = _to_float(normalized.get("LoanAmount", 0.0))
+        loan_amount_term = _to_float(normalized.get("Loan_Amount_Term", 360.0))
+        credit_history = _to_float(normalized.get("Credit_History", 1.0))
+
         return Prediction(
-        # Input features
-        applicant_income=data.get('ApplicantIncome'),
-        coapplicant_income=data.get('CoapplicantIncome', 0),
-        loan_amount=data.get('LoanAmount'),
-        loan_amount_term=data.get('Loan_Amount_Term'),
-        credit_history=data.get('Credit_History'),
-        gender=data.get('Gender'),
-        married=data.get('Married'),
-        dependents=data.get('Dependents'),
-        education=data.get('Education'),
-        self_employed=data.get('Self_Employed'),
-        property_area=data.get('Property_Area'),
+            # Input features
+            applicant_income=applicant_income,
+            coapplicant_income=coapplicant_income,
+            loan_amount=loan_amount,
+            loan_amount_term=loan_amount_term,
+            credit_history=credit_history,
+            gender=normalized.get("Gender"),
+            married=normalized.get("Married"),
+            dependents=str(normalized.get("Dependents")),
+            education=normalized.get("Education"),
+            self_employed=normalized.get("Self_Employed"),
+            property_area=normalized.get("Property_Area"),
+            # Prediction results
+            prediction=prediction_result.get("prediction"),
+            prediction_code=int(prediction_result.get("prediction_code", 0)),
+            confidence=float(prediction_result.get("confidence", 0.0)),
+            probability_approved=float(
+                prediction_result.get("probability", {}).get("approved", 0.0)
+            ),
+            probability_rejected=float(
+                prediction_result.get("probability", {}).get("rejected", 0.0)
+            ),
+            # Metadata
+            had_warnings=bool(warnings),
+            warnings=json.dumps(warnings) if warnings else json.dumps([]),
+            ip_address=ip_address,
+        )
 
-        # Prediction results
-        prediction=prediction_result['prediction'],
-        prediction_code=prediction_result['prediction_code'],
-        confidence=prediction_result['confidence'],
-        probability_approved=prediction_result['probability']['approved'],
-        probability_rejected=prediction_result['probability']['rejected'],
 
-        # Metadata
-        had_warnings=bool(warnings),
-        warnings=json.dumps(warnings) if warnings else None,
-        ip_address=ip_address
-    )
-
-class APIStats(db.Model):
+class APIStats(db.Model):  # type: ignore[name-defined]
     """Model for tracking API statisics"""
 
-    __tablename__ = 'api_stats'
+    __tablename__ = "api_stats"
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, default=lambda: datetime.now().date(),
-                     unique=True, nullable=False)
+    date = db.Column(
+        db.Date, default=lambda: datetime.now().date(), unique=True, nullable=False
+    )
     total_requests = db.Column(db.Integer, default=0)
     approved_count = db.Column(db.Integer, default=0)
     rejected_count = db.Column(db.Integer, default=0)
     avg_confidence = db.Column(db.Float, default=0.0)
 
     def __repr__(self):
-        return f'<APIStats {self.date}: {self.total_requests} requests>'
-    
+        return f"<APIStats {self.date}: {self.total_requests} requests>"
+
     def to_dict(self):
         return {
-            'date': self.date.isoformat(),
-            'total_requests': self.total_requests,
-            'approved_count': self.approved_count,
-            'rejected_count': self.rejected_count,
-            'approval_rate': f"{(self.approved_count / self.total_requests * 100):.2f}%" if self.total_requests > 0 else "0%",
-            'avg_confidence': f"{self.avg_confidence:.2%}" 
+            "date": self.date.isoformat(),
+            "total_requests": self.total_requests,
+            "approved_count": self.approved_count,
+            "rejected_count": self.rejected_count,
+            "approval_rate": (
+                f"{(self.approved_count / self.total_requests * 100):.2f}%"
+                if self.total_requests > 0
+                else "0%"
+            ),
+            "avg_confidence": f"{self.avg_confidence:.2%}",
         }
-    
+
+
 def init_db(app):
     """Initialize database with Flask app"""
     db.init_app(app)
@@ -150,37 +179,40 @@ def init_db(app):
         # Avoid non-ASCII characters here to prevent Windows console encoding errors
         print("Database initialized")
 
+
 def get_recent_predictions(limit=10):
     """Get recent predictions"""
     return Prediction.query.order_by(Prediction.timestamp.desc()).limit(limit).all()
+
 
 def get_prediction_by_id(prediction_id):
     """Get specific prediction by ID"""
     return db.session.get(Prediction, prediction_id)
 
+
 def get_predictions_by_date(start_date, end_date):
     """Get predictions within date range"""
     return Prediction.query.filter(
-        Prediction.timestamp >= start_date,
-        Prediction.timestamp <= end_date
+        Prediction.timestamp >= start_date, Prediction.timestamp <= end_date
     ).all()
 
-def get_statistics():
+
+def get_statistics() -> Dict[str, Any]:
     """Get overall statistics"""
-    total = Prediction.query.count()
-    approved = Prediction.query.filter_by(prediction='Approved').count()
-    rejected = Prediction.query.filter_by(prediction='Rejected').count()
+    total: int = Prediction.query.count()
+    approved: int = Prediction.query.filter_by(prediction="Approved").count()
+    rejected: int = Prediction.query.filter_by(prediction="Rejected").count()
 
     avg_confidence = db.session.query(db.func.avg(Prediction.confidence)).scalar() or 0
 
     return {
-        'total_predictions': total,
-        'approved': approved,
-        'rejected': rejected,
-        'approval_rate': f"{(approved / total * 100):.2f}%" if total > 0
-else "0%",
-        'average_confidence': f"{avg_confidence:.2%}"
+        "total_predictions": total,
+        "approved": approved,
+        "rejected": rejected,
+        "approval_rate": f"{(approved / total * 100):.2f}%" if total > 0 else "0%",
+        "average_confidence": f"{avg_confidence:.2%}",
     }
+
 
 def update_daily_stats(prediction_result):
     """Update daily statistics"""
@@ -195,10 +227,10 @@ def update_daily_stats(prediction_result):
             total_requests=0,
             approved_count=0,
             rejected_count=0,
-            avg_confidence=0.0
+            avg_confidence=0.0,
         )
         db.session.add(stats)
-    
+
     # Ensure fields are initialized
     if stats.total_requests is None:
         stats.total_requests = 0
@@ -208,27 +240,31 @@ def update_daily_stats(prediction_result):
         stats.rejected_count = 0
     if stats.avg_confidence is None:
         stats.avg_confidence = 0.0
-    
+
     stats.total_requests += 1
 
-    if prediction_result['prediction'] == 'Approved':
+    if prediction_result["prediction"] == "Approved":
         stats.approved_count += 1
     else:
         stats.rejected_count += 1
 
     # Update average confidence
-    total_confidence = stats.avg_confidence * (stats.total_requests - 1) + prediction_result['confidence']
+    total_confidence = (
+        stats.avg_confidence * (stats.total_requests - 1)
+        + prediction_result["confidence"]
+    )
     stats.avg_confidence = total_confidence / stats.total_requests
 
     db.session.commit()
 
+
 # Test database operations
-if __name__ == '__main__':
+if __name__ == "__main__":
     from flask import Flask
 
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test_predictions.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test_predictions.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     init_db(app)
 
@@ -237,11 +273,11 @@ if __name__ == '__main__':
         test_prediction = Prediction(
             applicant_income=5000,
             loan_amount=150,
-            prediction='Approved',
+            prediction="Approved",
             prediction_code=1,
             confidence=0.85,
             probability_approved=0.85,
-            probability_rejected=0.15
+            probability_rejected=0.15,
         )
 
         db.session.add(test_prediction)

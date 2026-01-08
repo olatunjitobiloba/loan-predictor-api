@@ -62,7 +62,7 @@
                         <!-- Personal Information -->
                         <div class="form-section">
                             <h3 class="form-section-title">Personal Information</h3>
-                            
+
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="gender">Gender</label>
@@ -113,23 +113,23 @@
                         <!-- Financial Information -->
                         <div class="form-section">
                             <h3 class="form-section-title">Financial Information</h3>
-                            
+
                             <div class="form-group">
                                 <label for="applicant-income">Applicant Income (Monthly) *</label>
-                                <input type="number" id="applicant-income" name="ApplicantIncome" 
+                                <input type="number" id="applicant-income" name="ApplicantIncome"
                                        placeholder="e.g., 5000" required min="0" max="100000">
                                 <small>Required field</small>
                             </div>
 
                             <div class="form-group">
                                 <label for="coapplicant-income">Co-applicant Income (Monthly)</label>
-                                <input type="number" id="coapplicant-income" name="CoapplicantIncome" 
+                                <input type="number" id="coapplicant-income" name="CoapplicantIncome"
                                        placeholder="e.g., 1500" min="0" max="100000" value="0">
                             </div>
 
                             <div class="form-group">
                                 <label for="loan-amount">Loan Amount (in thousands)</label>
-                                <input type="number" id="loan-amount" name="LoanAmount" 
+                                <input type="number" id="loan-amount" name="LoanAmount"
                                        placeholder="e.g., 150" min="0" max="10000">
                             </div>
 
@@ -177,7 +177,7 @@
                         <div class="result-icon" id="result-icon">✓</div>
                         <h3 class="result-title" id="result-title">Loan Approved!</h3>
                         <p class="result-subtitle" id="result-subtitle">High confidence prediction</p>
-                        
+
                         <div class="confidence-bar">
                             <div class="confidence-label">Confidence</div>
                             <div class="confidence-progress">
@@ -242,7 +242,7 @@
                         <h3>🔬 Benchmark Test</h3>
                         <p>Test all models with the same input data to compare their predictions</p>
                     </div>
-                    
+
                     <div class="benchmark-actions">
                         <button class="cta-button" onclick="benchmarkModels()" id="benchmark-btn">
                             <span id="benchmark-text">Run Benchmark Test</span>
@@ -250,7 +250,7 @@
                         </button>
                         <p class="benchmark-note">Uses the last prediction input or default test data</p>
                     </div>
-                    
+
                     <div id="benchmark-results" class="benchmark-results" style="display: none;">
                         <!-- Benchmark results will be populated here -->
                     </div>
@@ -338,7 +338,7 @@
         <div class="container">
             <p>Built with ❤️ by Your Team | <a href="https://github.com/olatunjitobiloba1/loan-predictor-api" target="_blank">View on GitHub</a></p>
             <p>
-                Model Accuracy: 
+                Model Accuracy:
                 {% if model_info and model_info.accuracy is not none %}
                     {{ (model_info.accuracy * 100) | round(2) }}%
                 {% else %}
