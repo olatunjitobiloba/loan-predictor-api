@@ -15,8 +15,14 @@ from flask_compress import Compress
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-from database import (Prediction, db, get_recent_predictions, get_statistics,
-                      init_db, update_daily_stats)
+from database import (
+    Prediction,
+    db,
+    get_recent_predictions,
+    get_statistics,
+    init_db,
+    update_daily_stats,
+)
 from docs.swagger.config import swagger_config, swagger_template
 from validators import LoanApplicationValidator
 
