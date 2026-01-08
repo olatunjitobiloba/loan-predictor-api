@@ -9,8 +9,14 @@ import pandas as pd
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 
-from database import (Prediction, db, get_recent_predictions, get_statistics,
-                      init_db, update_daily_stats)
+from database import (
+    Prediction,
+    db,
+    get_recent_predictions,
+    get_statistics,
+    init_db,
+    update_daily_stats,
+)
 from validators import LoanApplicationValidator
 
 load_dotenv()
