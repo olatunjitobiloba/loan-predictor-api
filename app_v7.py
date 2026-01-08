@@ -21,9 +21,16 @@ from flask_limiter.util import get_remote_address
 from sklearn.calibration import CalibratedClassifierCV
 
 from config import config
+
 # config module is available if explicit app config is needed
-from database import (Prediction, db, get_recent_predictions, get_statistics,
-                      init_db, update_daily_stats)
+from database import (
+    Prediction,
+    db,
+    get_recent_predictions,
+    get_statistics,
+    init_db,
+    update_daily_stats,
+)
 from docs.swagger.config import swagger_config, swagger_template
 from utils import MAX_REQUEST_TIMES, apply_defaults
 from validators import LoanApplicationValidator
@@ -82,9 +89,9 @@ def handle_options_preflight():
         else:
             resp.headers["Access-Control-Allow-Origin"] = cors_arg
         resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-        resp.headers[
-            "Access-Control-Allow-Headers"
-        ] = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        resp.headers["Access-Control-Allow-Headers"] = (
+            "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        )
         resp.headers["Access-Control-Allow-Credentials"] = "true"
         return resp
 
