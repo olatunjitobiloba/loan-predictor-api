@@ -1,3 +1,41 @@
+# Loan Predictor API
+
+This repository contains a Flask-based loan prediction API. The following
+shows the current top-level project layout.
+
+Repository structure
+loan-predictor-api/
+├── .env.example
+├── .gitignore
+├── .pre-commit-config.yaml
+├── .venv/               # local virtual environment (ignored)
+├── app.py               # Main application entrypoint
+├── config.py            # Configuration
+├── constants.py         # Constants used across the app
+├── utils.py             # Helper utilities
+├── validators.py        # Input validation
+├── database.py          # Database models and helpers
+├── Procfile             # Deployment config for hosting platforms
+├── data/                # Data and requirements files
+├── docs/                # Documentation and generated docs
+├── instance/            # Runtime instance files (DB, local secrets)
+├── models/              # Saved ML models and metadata
+├── templates/           # HTML templates
+├── static/              # Static assets (CSS/JS)
+├── tests/               # Test suite
+├── portfolio/           # Portfolio assets / notes
+└── README.md            # This file
+
+Notes
+ - The `instance/` folder is used for environment-specific or secret files
+   (local DB files, credentials, etc.) and should not be committed to source
+   control.
+ - A copy of previously-archived files was moved to `C:\Dev\archived_projects`
+   during repository reorganization.
+
+If you'd like the README to include additional details (running the app,
+API endpoints, example requests), tell me which sections to add and I'll
+append them.
 # Loan Prediction API
 
 Production-ready AI loan prediction system with multiple trained models and a lightweight REST API for making loan approval predictions.
@@ -30,7 +68,8 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+# dependencies are stored under `data/` in this repository layout
+pip install -r data/requirements.txt
 ```
 
 4. Set up environment variables
@@ -257,7 +296,9 @@ Common issues
 
 ## 📝 Contributing
 
-See `CONTRIBUTING.md` for contribution guidelines.
+Contribution guidelines (original `CONTRIBUTING.md`) were moved during
+reorganization; see the archived copy in `C:\Dev\archived_projects` or the
+project history on your git host for the original document.
 
 ## 📄 License
 
