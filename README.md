@@ -1,41 +1,3 @@
-# Loan Predictor API
-
-This repository contains a Flask-based loan prediction API. The following
-shows the current top-level project layout.
-
-Repository structure
-loan-predictor-api/
-├── .env.example
-├── .gitignore
-├── .pre-commit-config.yaml
-├── .venv/               # local virtual environment (ignored)
-├── app.py               # Main application entrypoint
-├── config.py            # Configuration
-├── constants.py         # Constants used across the app
-├── utils.py             # Helper utilities
-├── validators.py        # Input validation
-├── database.py          # Database models and helpers
-├── Procfile             # Deployment config for hosting platforms
-├── data/                # Data and requirements files
-├── docs/                # Documentation and generated docs
-├── instance/            # Runtime instance files (DB, local secrets)
-├── models/              # Saved ML models and metadata
-├── templates/           # HTML templates
-├── static/              # Static assets (CSS/JS)
-├── tests/               # Test suite
-├── portfolio/           # Portfolio assets / notes
-└── README.md            # This file
-
-Notes
- - The `instance/` folder is used for environment-specific or secret files
-   (local DB files, credentials, etc.) and should not be committed to source
-   control.
- - A copy of previously-archived files was moved to `C:\Dev\archived_projects`
-   during repository reorganization.
-
-If you'd like the README to include additional details (running the app,
-API endpoints, example requests), tell me which sections to add and I'll
-append them.
 # Loan Prediction API
 
 Production-ready AI loan prediction system with multiple trained models and a lightweight REST API for making loan approval predictions.
@@ -68,8 +30,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 3. Install dependencies
 
 ```bash
-# dependencies are stored under `data/` in this repository layout
-pip install -r data/requirements.txt
+pip install -r requirements.txt
 ```
 
 4. Set up environment variables
@@ -296,9 +257,7 @@ Common issues
 
 ## 📝 Contributing
 
-Contribution guidelines (original `CONTRIBUTING.md`) were moved during
-reorganization; see the archived copy in `C:\Dev\archived_projects` or the
-project history on your git host for the original document.
+See `CONTRIBUTING.md` for contribution guidelines.
 
 ## 📄 License
 
@@ -380,43 +339,81 @@ Beautiful, responsive web interface for making predictions.
 
 ```
 loan-predictor-api/
-├── app_v4.py                      # Main Flask application (latest)
-├── app_v3.py                      # Previous version
-├── app_v2.py                      # Version 2
-├── app.py                         # Version 1
-├── validators.py                  # Input validation logic
-├── database.py                    # SQLAlchemy models & queries
-├── preprocess.py                  # Data preprocessing pipeline
-├── train_model_v3.py              # Model training script
-├── models/                        # Trained ML models
-│   ├── loan_model_v2.pkl         # Random Forest model (88.62%)
-│   ├── feature_names.txt         # Feature list
-│   └── model_info.json           # Model metadata
-├── data/                          # Datasets
-│   ├── train_u6lujuX_CVtuZ9i.csv # Training data
-│   ├── test_Y3wMUE5_7gLdaTN.csv  # Test data
-│   └── data_summary.txt          # Data description
-├── notebooks/                     # Jupyter notebooks
-│   ├── 01_data_exploration.ipynb
-│   ├── 02_model_training.ipynb
-│   └── 03_feature_engineering.ipynb
-├── tests/                         # Test suite (55+ tests)
-│   ├── test_api.py               # API endpoint tests
-│   ├── test_database.py          # Database tests
-│   ├── test_validators.py        # Validation tests
-│   └── conftest.py               # pytest configuration
-├── templates/                     # Flask templates
-│   ├── home.html                 # Home page
-│   ├── about.html                # About page
-│   └── layout.html               # Base layout
-├── static/                        # Static files
-│   └── main.css                  # Stylesheet
-├── requirements.txt               # Python dependencies
-├── Procfile                       # Render deployment config
-├── runtime.txt                    # Python version specification
-├── pytest.ini                     # pytest configuration
-├── .env.example                   # Environment variables template
-└── README.md                      # This file
+├── app.py
+├── config.py
+├── constants.py
+├── database.py
+├── Procfile
+├── README.md
+├── utils.py
+├── validators.py
+├── __pycache__/
+├── data/
+│   ├── data_summary.txt
+│   ├── requirements_prod.txt
+│   ├── requirements-dev.txt
+│   ├── requirements.txt
+│   ├── runtime.txt
+│   ├── test_predictions.csv
+│   ├── test_Y3wMUE5_7gLdaTN.csv
+│   └── train_u6lujuX_CVtuZ9i.csv
+├── docs/
+│   ├── __init__.py
+│   ├── __pycache__/
+│   └── swagger/
+│       ├── __init__.py
+│       ├── analytics.yml
+│       ├── config.py
+│       ├── health.yml
+│       ├── history_id.yml
+│       ├── history.yml
+│       ├── model_info.yml
+│       ├── predict.yml
+│       ├── statistics.yml
+│       └── validation_rules.yml
+├── instance/
+├── models/
+│   ├── feature_names.json
+│   ├── feature_names.txt
+│   ├── model_comparison.json
+│   ├── model_info.json
+│   ├── submission.csv
+│   ├── test_features_processed.csv
+│   └── calibrators/
+├── portfolio/
+│   ├── blog-post.md
+│   ├── code-review-checklist.md
+│   ├── final-verification.md
+│   ├── README.md
+│   ├── security-audit.md
+│   └── diagrams/
+│       └── architecture.md
+├── scripts/
+│   └── get_apispec.py
+├── static/
+│   ├── index.html
+│   ├── main.css
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── app.js
+├── templates/
+│   ├── index.html
+│   └── tmp_frontend.html
+├── tmp_frontend.html
+└── tests/
+  ├── __init__.py
+  ├── conftest.py
+  ├── README.md
+  ├── test_api.py
+  ├── test_database.py
+  ├── test_endpoints.py
+  ├── test_fix.py
+  ├── test_performance.py
+  ├── test_prod.py
+  ├── test_production.py
+  ├── test_validation.py
+  └── test_validators.py
 ```
 
 ## 🚀 Quick Start (Local Development)
