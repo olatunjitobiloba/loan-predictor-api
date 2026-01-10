@@ -1340,9 +1340,9 @@ def predict_with_model(model_name):
         in: path
         type: string
         required: true
-                description: >-
-                    Model to use (random_forest, logistic_regression,
-                    gradient_boosting, support_vector_machine)
+        description: >-
+          Model to use (random_forest, logistic_regression,
+          gradient_boosting, support_vector_machine)
       - name: body
         in: body
         required: true
