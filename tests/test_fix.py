@@ -3,7 +3,7 @@
 
 import sys
 
-from app_v7 import feature_names, load_model, model, preprocess_input
+from app import feature_names, load_model, model, preprocess_input
 
 
 def test_prediction():
