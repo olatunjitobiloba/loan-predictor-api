@@ -1,16 +1,19 @@
-// API Base URL - Use relative URL for localhost, full URL for production
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+// LoanPredictor AI - Client Application Logic
+// Light Theme Architecture & Interaction Controller
+
+// API Base URL - relative when running locally or on the same Render origin, absolute fallback
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.includes('onrender.com'))
     ? ''
     : 'https://loan-predictor-api-91xu.onrender.com';
 
-// SVG Icons Constants (Clean uniform SVG replacements for emojis)
+// Unified SVG Icon System (Strict Zero-Emoji Policy)
 const ICONS = {
-    checkCircle: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-    xCircle: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-    badgeStar: `<svg class="badge-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+    checkCircle: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+    xCircle: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+    badgeStar: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
 };
 
-// Preset Scenarios (Dribbble & 21st.dev test presets)
+// Preset Archetypes for Instant Simulator Stress-Testing
 const PRESETS = {
     prime: {
         Gender: 'Male',
@@ -53,14 +56,36 @@ const PRESETS = {
     }
 };
 
+// Synchronize range slider with display chips and hidden form input
+function syncRange(id, value, prefix = '', suffix = '') {
+    const hiddenInput = document.getElementById(id);
+    const rangeSlider = document.getElementById(id + '-range');
+    const chip = document.getElementById(id + '-val');
+
+    if (hiddenInput) hiddenInput.value = value;
+    if (rangeSlider && rangeSlider.value !== String(value)) rangeSlider.value = value;
+    if (chip) {
+        const num = Number(value);
+        const formatted = Number.isFinite(num) ? num.toLocaleString() : value;
+        chip.textContent = `${prefix}${formatted}${suffix}`;
+    }
+}
+
+// Preset application
 function applyPreset(key) {
     const preset = PRESETS[key];
     if (!preset) return;
 
-    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    // Toggle active chip state
+    document.querySelectorAll('.scenario-chip').forEach(btn => btn.classList.remove('active'));
+    if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+    }
 
     const form = document.getElementById('prediction-form');
+    if (!form) return;
+
+    // Update standard form controls
     Object.entries(preset).forEach(([field, value]) => {
         const input = form.elements[field];
         if (input) {
@@ -68,38 +93,90 @@ function applyPreset(key) {
         }
     });
 
-    // Auto-run inference for instant feedback
+    // Update interactive range sliders & value badges
+    if (preset.ApplicantIncome !== undefined) {
+        syncRange('applicant-income', preset.ApplicantIncome, '$');
+    }
+    if (preset.CoapplicantIncome !== undefined) {
+        syncRange('coapplicant-income', preset.CoapplicantIncome, '$');
+    }
+    if (preset.LoanAmount !== undefined) {
+        syncRange('loan-amount', preset.LoanAmount, '$', 'k');
+    }
+
+    // Auto-run underwriting inference
     submitPrediction();
 }
 
-// Load statistics and models on page load
-document.addEventListener('DOMContentLoaded', function() {
+// Reset form to defaults
+function resetForm() {
+    const form = document.getElementById('prediction-form');
+    if (form) form.reset();
+
+    // Reset range sliders
+    syncRange('applicant-income', 7500, '$');
+    syncRange('coapplicant-income', 2500, '$');
+    syncRange('loan-amount', 140, '$', 'k');
+
+    // Reset simulator UI panels
+    const placeholder = document.getElementById('results-placeholder');
+    const resultsContainer = document.getElementById('results-container');
+    if (placeholder) placeholder.style.display = 'flex';
+    if (resultsContainer) resultsContainer.style.display = 'none';
+
+    // Reset scenario chips
+    document.querySelectorAll('.scenario-chip').forEach(btn => btn.classList.remove('active'));
+    const firstChip = document.querySelector('.scenario-chip');
+    if (firstChip) firstChip.classList.add('active');
+}
+
+// Initialize on DOM Ready
+document.addEventListener('DOMContentLoaded', () => {
     loadStatistics();
     loadModels();
+
+    const form = document.getElementById('prediction-form');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitPrediction();
+        });
+    }
 });
 
-// Load telemetry statistics
+// Telemetry statistics polling
 async function loadStatistics() {
     try {
         const response = await fetch(`${API_URL}/statistics`, {
             cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' },
+            headers: { 'Cache-Control': 'no-cache' }
         });
         const data = await response.json();
 
-        document.getElementById('stats-total').textContent = (data.total_predictions || 0).toLocaleString();
-        document.getElementById('stats-approved').textContent = (data.approved || 0).toLocaleString();
-        document.getElementById('stats-rejected').textContent = (data.rejected || 0).toLocaleString();
-        document.getElementById('stats-rate').textContent = data.approval_rate || 'N/A';
-        
-        animateNumber('total-predictions', data.total_predictions || 0);
+        const total = data.total_predictions || 0;
+        const approved = data.approved || 0;
+        const rejected = data.rejected || 0;
+        const rate = data.approval_rate || 'N/A';
+
+        const statsTotalEl = document.getElementById('stats-total');
+        const statsApprovedEl = document.getElementById('stats-approved');
+        const statsRejectedEl = document.getElementById('stats-rejected');
+        const statsRateEl = document.getElementById('stats-rate');
+
+        if (statsTotalEl) statsTotalEl.textContent = total.toLocaleString();
+        if (statsApprovedEl) statsApprovedEl.textContent = approved.toLocaleString();
+        if (statsRejectedEl) statsRejectedEl.textContent = rejected.toLocaleString();
+        if (statsRateEl) statsRateEl.textContent = rate;
+
+        animateNumber('total-predictions', total);
     } catch (error) {
-        console.error('Error loading statistics:', error);
-        document.getElementById('stats-total').textContent = '--';
+        console.error('Telemetry query error:', error);
+        const statsTotalEl = document.getElementById('stats-total');
+        if (statsTotalEl) statsTotalEl.textContent = '--';
     }
 }
 
-// Animate number counting
+// Smooth number animation
 const _numberAnimations = new Map();
 function animateNumber(elementId, targetNumber, duration = 800) {
     const element = document.getElementById(elementId);
@@ -137,7 +214,7 @@ function animateNumber(elementId, targetNumber, duration = 800) {
     _numberAnimations.set(elementId, raf);
 }
 
-// Load and display model benchmarks
+// Model benchmarks loader
 async function loadModels() {
     try {
         const response = await fetch(`${API_URL}/models`);
@@ -147,7 +224,6 @@ async function loadModels() {
         if (!modelsGrid) return;
 
         modelsGrid.innerHTML = '';
-
         const bestModel = data.best_model;
         const order = Array.isArray(data.models_list)
             ? data.models_list.map(m => m.id)
@@ -167,32 +243,32 @@ async function loadModels() {
             const predTime = (typeof modelData.avg_prediction_time === 'number') ? (modelData.avg_prediction_time * 1000).toFixed(2) + 'ms' : '1.4ms';
 
             const card = document.createElement('div');
-            card.className = `model-card ${isBest ? 'best' : ''}`;
+            card.className = `model-card-item ${isBest ? 'featured' : ''}`;
             card.innerHTML = `
-                <div class="model-header">
-                    <h3 class="model-name">${modelData.name || modelKey.replace(/_/g, ' ')}</h3>
-                    ${isBest ? `<span class="best-badge">${ICONS.badgeStar} Top Benchmark</span>` : ''}
+                <div class="model-card-head">
+                    <h3 class="model-card-title">${modelData.name || modelKey.replace(/_/g, ' ')}</h3>
+                    ${isBest ? `<span class="pill-best">${ICONS.badgeStar} Top Benchmark</span>` : ''}
                 </div>
-                <div class="model-metrics">
-                    <div class="metric-row">
-                        <span class="metric-label">Accuracy</span>
-                        <span class="metric-value">${acc}</span>
+                <div class="metric-rows-stack">
+                    <div class="data-row">
+                        <span class="data-label">Accuracy</span>
+                        <span class="data-value">${acc}</span>
                     </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Precision</span>
-                        <span class="metric-value">${prec}</span>
+                    <div class="data-row">
+                        <span class="data-label">Precision</span>
+                        <span class="data-value">${prec}</span>
                     </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Recall</span>
-                        <span class="metric-value">${rec}</span>
+                    <div class="data-row">
+                        <span class="data-label">Recall</span>
+                        <span class="data-value">${rec}</span>
                     </div>
-                    <div class="metric-row">
-                        <span class="metric-label">F1-Score</span>
-                        <span class="metric-value">${f1}</span>
+                    <div class="data-row">
+                        <span class="data-label">F1-Score</span>
+                        <span class="data-value">${f1}</span>
                     </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Serving Latency</span>
-                        <span class="metric-value">${predTime}</span>
+                    <div class="data-row">
+                        <span class="data-label">Serving Latency</span>
+                        <span class="data-value">${predTime}</span>
                     </div>
                 </div>
             `;
@@ -200,15 +276,13 @@ async function loadModels() {
             modelsGrid.appendChild(card);
         });
 
-        if (typeof renderMetricsTable === 'function') {
-            renderMetricsTable(data.models || {}, data.best_model);
-        }
+        renderMetricsTable(data.models || {}, data.best_model);
     } catch (error) {
         console.error('Error loading models:', error);
     }
 }
 
-// Render the metrics table
+// Render model evaluation matrix table
 function renderMetricsTable(models, bestModelKey) {
     const tbody = document.getElementById('metrics-tbody');
     if (!tbody) return;
@@ -227,31 +301,25 @@ function renderMetricsTable(models, bestModelKey) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><strong>${m.name || key}</strong></td>
-            <td><span class="metric-value">${(m.accuracy * 100).toFixed(2)}%</span></td>
-            <td><span class="metric-value">${(m.precision * 100).toFixed(2)}%</span></td>
-            <td><span class="metric-value">${(m.recall * 100).toFixed(2)}%</span></td>
-            <td><span class="metric-value">${(m.f1_score * 100).toFixed(2)}%</span></td>
-            <td>${isBest ? '<span class="status-pill active">Production Live</span>' : '<span class="status-pill benchmark">Trained Suite</span>'}</td>
+            <td><span class="data-value">${(m.accuracy * 100).toFixed(2)}%</span></td>
+            <td><span class="data-value">${(m.precision * 100).toFixed(2)}%</span></td>
+            <td><span class="data-value">${(m.recall * 100).toFixed(2)}%</span></td>
+            <td><span class="data-value">${(m.f1_score * 100).toFixed(2)}%</span></td>
+            <td>${isBest ? '<span class="status-badge-chip production">Production Live</span>' : '<span class="status-badge-chip suite">Trained Suite</span>'}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
 // Prediction form submit handler
-const form = document.getElementById('prediction-form');
-if (form) {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitPrediction();
-    });
-}
-
 async function submitPrediction() {
     const submitBtn = document.getElementById('submit-btn');
     const submitText = document.getElementById('submit-text');
     const submitLoader = document.getElementById('submit-loader');
 
     const form = document.getElementById('prediction-form');
+    if (!form) return;
+
     const formData = new FormData(form);
     const data = {};
 
@@ -263,9 +331,9 @@ async function submitPrediction() {
         }
     });
 
-    submitBtn.disabled = true;
-    submitText.style.display = 'none';
-    submitLoader.style.display = 'inline-block';
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitText) submitText.style.display = 'none';
+    if (submitLoader) submitLoader.style.display = 'inline-block';
 
     try {
         const response = await fetch(`${API_URL}/predict`, {
@@ -280,19 +348,19 @@ async function submitPrediction() {
             displayResults(result, data);
             loadStatistics();
         } else {
-            alert('Validation Error: ' + (result.error || 'Failed to make prediction'));
+            alert('Underwriting Validation: ' + (result.error || 'Failed to execute prediction.'));
         }
     } catch (error) {
-        console.error('Prediction error:', error);
-        alert('Network or server error while running inference. Please verify API health.');
+        console.error('Prediction inference error:', error);
+        alert('Network connection error while contacting inference API.');
     } finally {
-        submitBtn.disabled = false;
-        submitText.style.display = 'block';
-        submitLoader.style.display = 'none';
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.style.display = 'inline';
+        if (submitLoader) submitLoader.style.display = 'none';
     }
 }
 
-// Display decision results (Dribbble Risk Card & Gauge Pattern)
+// Display decision results
 function displayResults(result, inputData = {}) {
     const placeholder = document.getElementById('results-placeholder');
     const resultsContainer = document.getElementById('results-container');
@@ -303,45 +371,66 @@ function displayResults(result, inputData = {}) {
     const gaugeFill = document.getElementById('gauge-fill');
 
     if (placeholder) placeholder.style.display = 'none';
-    resultsContainer.style.display = 'block';
+    if (resultsContainer) resultsContainer.style.display = 'block';
 
     const isApproved = result.prediction === 'Approved';
 
-    if (isApproved) {
-        resultIcon.className = 'result-icon-badge';
-        resultIcon.innerHTML = ICONS.checkCircle;
-        resultTitle.textContent = 'Loan Approved';
-        resultTitle.className = 'result-title';
-        resultTier.textContent = 'QUALIFIED PRIME · TIER 1';
-        resultSubtitle.textContent = 'Underwriting thresholds satisfied with low predicted default hazard.';
-        gaugeFill.className = 'gauge-fill';
-    } else {
-        resultIcon.className = 'result-icon-badge rejected';
-        resultIcon.innerHTML = ICONS.xCircle;
-        resultTitle.textContent = 'Loan Qualification Declined';
-        resultTitle.className = 'result-title rejected';
-        resultTier.textContent = 'ELEVATED RISK · TIER 3';
-        resultSubtitle.textContent = 'Applicant metrics fall outside current portfolio risk tolerances.';
-        gaugeFill.className = 'gauge-fill rejected';
+    if (resultIcon) {
+        if (isApproved) {
+            resultIcon.className = 'badge-icon-wrap';
+            resultIcon.innerHTML = ICONS.checkCircle;
+        } else {
+            resultIcon.className = 'badge-icon-wrap rejected';
+            resultIcon.innerHTML = ICONS.xCircle;
+        }
     }
 
-    // Animate radial gauge (circumference 2 * PI * 50 = 314.15)
+    if (resultTitle) {
+        if (isApproved) {
+            resultTitle.textContent = 'Loan Approved';
+            resultTitle.className = 'decision-headline';
+        } else {
+            resultTitle.textContent = 'Loan Qualification Declined';
+            resultTitle.className = 'decision-headline rejected';
+        }
+    }
+
+    if (resultTier) {
+        resultTier.textContent = isApproved ? 'QUALIFIED PRIME · TIER 1' : 'ELEVATED RISK · TIER 3';
+    }
+
+    if (resultSubtitle) {
+        resultSubtitle.textContent = isApproved
+            ? 'The applicant satisfies underwriting credit policies with low estimated default probability.'
+            : 'Applicant metrics fall outside acceptable credit risk thresholds under current underwriting guidelines.';
+    }
+
+    // Radial Gauge Animation (Circumference 2 * PI * 50 = 314)
     const confidencePct = Math.round((result.confidence || 0.88) * 100);
-    document.getElementById('confidence-value').textContent = confidencePct + '%';
-    const offset = 314 - (314 * (confidencePct / 100));
-    gaugeFill.style.strokeDashoffset = offset;
+    const confValEl = document.getElementById('confidence-value');
+    if (confValEl) confValEl.textContent = confidencePct + '%';
+
+    if (gaugeFill) {
+        gaugeFill.className = isApproved ? 'radial-indicator' : 'radial-indicator rejected';
+        const offset = 314 - (314 * (confidencePct / 100));
+        gaugeFill.style.strokeDashoffset = offset;
+    }
 
     // Probabilities
     const approvalProb = ((result.probability?.approved || 0) * 100).toFixed(1);
     const rejectionProb = ((result.probability?.rejected || 0) * 100).toFixed(1);
 
-    document.getElementById('approval-prob').textContent = approvalProb + '%';
-    document.getElementById('approval-fill').style.width = approvalProb + '%';
+    const appProbEl = document.getElementById('approval-prob');
+    const appFillEl = document.getElementById('approval-fill');
+    const rejProbEl = document.getElementById('rejection-prob');
+    const rejFillEl = document.getElementById('rejection-fill');
 
-    document.getElementById('rejection-prob').textContent = rejectionProb + '%';
-    document.getElementById('rejection-fill').style.width = rejectionProb + '%';
+    if (appProbEl) appProbEl.textContent = approvalProb + '%';
+    if (appFillEl) appFillEl.style.width = approvalProb + '%';
+    if (rejProbEl) rejProbEl.textContent = rejectionProb + '%';
+    if (rejFillEl) rejFillEl.style.width = rejectionProb + '%';
 
-    // Explainable AI (XAI) feature importance drivers
+    // Explainable AI (XAI) feature attribution drivers
     renderDecisionDrivers(inputData, isApproved);
 
     // Warnings
@@ -349,15 +438,17 @@ function displayResults(result, inputData = {}) {
     const warningsList = document.getElementById('warnings-list');
 
     if (result.warnings && result.warnings.length > 0) {
-        warningsContainer.style.display = 'block';
-        warningsList.innerHTML = '';
-        result.warnings.forEach(warning => {
-            const li = document.createElement('li');
-            li.textContent = warning;
-            warningsList.appendChild(li);
-        });
+        if (warningsContainer) warningsContainer.style.display = 'block';
+        if (warningsList) {
+            warningsList.innerHTML = '';
+            result.warnings.forEach(warning => {
+                const li = document.createElement('li');
+                li.textContent = warning;
+                warningsList.appendChild(li);
+            });
+        }
     } else {
-        warningsContainer.style.display = 'none';
+        if (warningsContainer) warningsContainer.style.display = 'none';
     }
 }
 
@@ -375,7 +466,7 @@ function renderDecisionDrivers(input, isApproved) {
 
     const drivers = [];
 
-    // Credit Factor
+    // Credit History Factor
     if (creditHistory) {
         drivers.push({ name: 'Credit Bureau Record', impact: '+38% Approval Signal', type: 'positive' });
     } else {
@@ -391,47 +482,37 @@ function renderDecisionDrivers(input, isApproved) {
         drivers.push({ name: 'Debt-to-Income Capacity', impact: '+8% Balanced Burden', type: 'positive' });
     }
 
-    // Property Zone
+    // Collateral Property Zone
     if (input.Property_Area === 'Semiurban') {
-        drivers.push({ name: 'Property Recovery Zone', impact: '+14% Prime Liquidity', type: 'positive' });
+        drivers.push({ name: 'Property Liquidity Zone', impact: '+14% Prime Liquidity', type: 'positive' });
     } else if (input.Property_Area === 'Urban') {
-        drivers.push({ name: 'Property Recovery Zone', impact: '+10% Metropolitan Asset', type: 'positive' });
+        drivers.push({ name: 'Property Liquidity Zone', impact: '+10% Metropolitan Asset', type: 'positive' });
     } else {
-        drivers.push({ name: 'Property Recovery Zone', impact: '-4% Rural Collateral Margin', type: 'neutral' });
+        drivers.push({ name: 'Property Liquidity Zone', impact: '-4% Rural Collateral Margin', type: 'neutral' });
     }
 
-    // Education / Employment
+    // Educational Earning Index
     if (input.Education === 'Graduate') {
         drivers.push({ name: 'Educational Earning Index', impact: '+6% Income Trajectory', type: 'positive' });
     }
 
     drivers.forEach(d => {
         const item = document.createElement('div');
-        item.className = 'driver-item';
+        item.className = 'driver-item-row';
         item.innerHTML = `
-            <span class="driver-name">${d.name}</span>
-            <span class="driver-tag ${d.type}">${d.impact}</span>
+            <span class="driver-title">${d.name}</span>
+            <span class="driver-badge ${d.type}">${d.impact}</span>
         `;
         list.appendChild(item);
     });
 }
 
-// Reset form
-function resetForm() {
-    const form = document.getElementById('prediction-form');
-    if (form) form.reset();
-
-    const placeholder = document.getElementById('results-placeholder');
-    const resultsContainer = document.getElementById('results-container');
-    if (placeholder) placeholder.style.display = 'flex';
-    if (resultsContainer) resultsContainer.style.display = 'none';
-
-    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-}
-
-// Benchmark all models
+// Benchmark all models concurrently
 async function benchmarkModels() {
-    const formData = new FormData(document.getElementById('prediction-form'));
+    const form = document.getElementById('prediction-form');
+    if (!form) return;
+
+    const formData = new FormData(form);
     const data = {};
 
     formData.forEach((value, key) => {
@@ -446,16 +527,14 @@ async function benchmarkModels() {
     const benchmarkText = document.getElementById('benchmark-text');
     const benchmarkLoader = document.getElementById('benchmark-loader');
 
-    if (benchmarkBtn) {
-        benchmarkBtn.disabled = true;
-        benchmarkText.style.display = 'none';
-        benchmarkLoader.style.display = 'inline-block';
-    }
+    if (benchmarkBtn) benchmarkBtn.disabled = true;
+    if (benchmarkText) benchmarkText.style.display = 'none';
+    if (benchmarkLoader) benchmarkLoader.style.display = 'inline-block';
 
     try {
         const response = await fetch(`${API_URL}/models/benchmark`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
@@ -464,21 +543,19 @@ async function benchmarkModels() {
         if (response.ok) {
             displayBenchmarkResults(result);
         } else {
-            alert('Benchmark Error: ' + (result.error || 'Failed to benchmark models'));
+            alert('Benchmark Evaluation: ' + (result.error || 'Failed to benchmark models.'));
         }
     } catch (error) {
         console.error('Benchmark error:', error);
         alert('Network error communicating with benchmark endpoint.');
     } finally {
-        if (benchmarkBtn) {
-            benchmarkBtn.disabled = false;
-            benchmarkText.style.display = 'inline';
-            benchmarkLoader.style.display = 'none';
-        }
+        if (benchmarkBtn) benchmarkBtn.disabled = false;
+        if (benchmarkText) benchmarkText.style.display = 'inline';
+        if (benchmarkLoader) benchmarkLoader.style.display = 'none';
     }
 }
 
-// Display benchmark results
+// Display benchmark results in sandbox tray
 function displayBenchmarkResults(result) {
     const container = document.getElementById('benchmark-results');
     if (!container) return;
@@ -486,22 +563,21 @@ function displayBenchmarkResults(result) {
     container.style.display = 'block';
 
     const isConsensusApproved = result.consensus.prediction === 'Approved';
-    const consensusBadgeClass = isConsensusApproved ? 'status-pill active' : 'status-pill danger';
 
     let html = `
-        <div style="background: var(--bg-surface-elevated); padding: 20px; border-radius: var(--radius-lg); margin-top: 20px; border: 1px solid var(--border-medium);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div style="background: #ffffff; padding: 22px; border-radius: var(--radius-lg); margin-top: 20px; border: 1px solid var(--border-card);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
                 <div>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace;">Model Ensemble Consensus</span>
-                    <h4 style="font-size: 1.4rem; color: ${isConsensusApproved ? 'var(--success)' : 'var(--danger)'}; margin-top: 4px;">
+                    <span style="font-size: 0.74rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; font-weight: 700;">Ensemble Consensus Verdict</span>
+                    <h4 style="font-size: 1.35rem; color: ${isConsensusApproved ? 'var(--success-emerald)' : 'var(--danger-rose)'}; margin-top: 4px; font-weight: 800;">
                         ${result.consensus.prediction}
                     </h4>
                 </div>
-                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-secondary);">
-                    Agreement: <strong style="color: var(--text-primary);">${result.consensus.agreement}</strong> (${result.consensus.models_agree}/${result.consensus.total_models} models)
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; color: var(--text-muted);">
+                    Agreement: <strong style="color: var(--text-headline);">${result.consensus.agreement}</strong> (${result.consensus.models_agree}/${result.consensus.total_models} models)
                 </div>
             </div>
-            <div class="benchmark-results-grid">
+            <div class="bench-grid-4">
     `;
 
     Object.entries(result.results || {}).forEach(([modelName, modelResult]) => {
@@ -511,12 +587,12 @@ function displayBenchmarkResults(result) {
         const confPct = ((modelResult.confidence || 0) * 100).toFixed(1);
 
         html += `
-            <div class="bench-card">
-                <div class="bench-model">${formattedName}</div>
-                <div class="bench-decision ${isApproved ? 'approved' : 'rejected'}">
+            <div class="bench-mini-card">
+                <div class="bench-mini-title">${formattedName}</div>
+                <div class="bench-mini-decision ${isApproved ? 'approved' : 'rejected'}">
                     ${modelResult.prediction}
                 </div>
-                <div class="bench-time">Confidence: ${confPct}% · Latency: ${timeMs}ms</div>
+                <div class="bench-mini-latency">Conf: ${confPct}% · Latency: ${timeMs}ms</div>
             </div>
         `;
     });
