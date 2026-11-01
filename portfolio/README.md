@@ -1,12 +1,12 @@
 # Loan Prediction AI - Portfolio Assets
 
-## 📹 Demo Video
+## Demo Video
 
 **Full Demo (2:47):** [https://youtu.be/4NUUZVpKvy8]
 
 [![Demo Video](screenshots/01-homepage-hero.png)](YOUR_YOUTUBE_LINK)
 
-## 📸 Screenshots
+## Screenshots
 
 ### Homepage & Features
 ![Homepage](screenshots/01-homepage-hero.png)
@@ -61,7 +61,7 @@
 
 *Fully responsive mobile interface*
 
-## 📊 Architecture Diagrams
+## Architecture Diagrams
 
 ### System Architecture
 ![Architecture](diagrams/architecture.png)
@@ -78,38 +78,38 @@
 
 *Machine learning data preprocessing and prediction flow*
 
-## 🎯 Key Features Demonstrated
+## Key Features Demonstrated
 
 ### Technical Skills
-- ✅ Machine Learning (4 models, 88.62% accuracy)
-- ✅ Backend Development (Flask, REST API)
-- ✅ Database Design (PostgreSQL, SQLAlchemy)
-- ✅ Testing (83% coverage, pytest)
-- ✅ API Documentation (Swagger/OpenAPI)
-- ✅ Performance Optimization (caching, rate limiting)
-- ✅ Frontend Development (HTML/CSS/JS)
-- ✅ DevOps (Render deployment, CI/CD)
+- [x] Machine Learning (4 models, 88.62% accuracy)
+- [x] Backend Development (Flask, REST API)
+- [x] Database Design (PostgreSQL, SQLAlchemy)
+- [x] Testing (83% coverage, pytest)
+- [x] API Documentation (Swagger/OpenAPI)
+- [x] Performance Optimization (caching, rate limiting)
+- [x] Frontend Development (HTML/CSS/JS)
+- [x] DevOps (Render deployment, CI/CD)
 
 ### Software Engineering Practices
-- ✅ Input validation and error handling
-- ✅ Comprehensive logging
-- ✅ Code organization and modularity
-- ✅ Documentation (code, API, README)
-- ✅ Version control (Git, GitHub)
-- ✅ Production deployment
-- ✅ Performance monitoring
-- ✅ Security best practices
+- [x] Input validation and error handling
+- [x] Comprehensive logging
+- [x] Code organization and modularity
+- [x] Documentation (code, API, README)
+- [x] Version control (Git, GitHub)
+- [x] Production deployment
+- [x] Performance monitoring
+- [x] Security best practices
 
 ### ML Engineering
-- ✅ Data preprocessing and feature engineering
-- ✅ Model training and evaluation
-- ✅ Model comparison and selection
-- ✅ Hyperparameter tuning
-- ✅ Cross-validation
-- ✅ Production model serving
-- ✅ Prediction logging and analytics
+- [x] Data preprocessing and feature engineering
+- [x] Model training and evaluation
+- [x] Model comparison and selection
+- [x] Hyperparameter tuning
+- [x] Cross-validation
+- [x] Production model serving
+- [x] Prediction logging and analytics
 
-## 📈 Project Metrics
+## Project Metrics
 
 - **Lines of Code:** ~3,500+
 - **Development Time:** 15 days (60 hours)
@@ -119,7 +119,7 @@
 - **Response Time:** ~150ms average
 - **Uptime:** 99.9%
 
-## 🔗 Links
+## Links
 
 - **Live Application:** https://loan-predictor-api-91xu.onrender.com/app
 - **API Documentation:** https://loan-predictor-api-91xu.onrender.com/docs
@@ -128,7 +128,7 @@
 - **LinkedIn Post:** [LinkedIn Post Link]
 - **Blog Post:** [https://medium.com/@olatunjitobiloba05/building-a-production-ready-ai-loan-prediction-system-a-15-day-journey-3a43cb87170f]
 
-## 📝 Usage in Portfolio
+## Usage in Portfolio
 
 These assets can be used for:
 - Portfolio website
@@ -139,7 +139,7 @@ These assets can be used for:
 - Technical blog posts
 - Case studies
 
-## 📄 License
+## License
 
 All assets are part of the Loan Prediction AI project.
 See main repository for license information.

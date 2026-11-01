@@ -197,7 +197,7 @@ model.fit(X_train, y_train)
 **Results:**
 
 - Initial accuracy: **79.83%**
-- After feature engineering: **88.62%** ✅
+- After feature engineering: **88.62%** [Passed]
 - Precision: **0.89**
 - Recall: **0.96**
 - F1-Score: **0.92**

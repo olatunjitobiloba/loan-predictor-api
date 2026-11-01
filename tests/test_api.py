@@ -146,5 +146,5 @@ if __name__ == "__main__":
         }
     )
 
-    # 🎯 Call stats AFTER all predictions
+    # [TEST] Call stats AFTER all predictions
     get_stats_endpoint()

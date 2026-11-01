@@ -101,7 +101,7 @@ def test_caching_effectiveness():
     # Calculate improvement
     if duration1 > 0:
         improvement = ((duration1 - duration2) / duration1) * 100
-        print(f"\n✅ Cache speedup: {improvement:.1f}% faster")
+        print(f"\n[PASS] Cache speedup: {improvement:.1f}% faster")
         print(f"   Speedup factor: {duration1/duration2:.1f}x")
 
     return duration1, duration2
@@ -143,7 +143,7 @@ def main():
         print(f"  Compression: {metrics.get('compression')}")
 
     print(f"\n{'='*70}")
-    print("✅ PERFORMANCE TESTS COMPLETE")
+    print("[PASS] PERFORMANCE TESTS COMPLETE")
     print(f"{'='*70}")
 
 

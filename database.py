@@ -293,4 +293,4 @@ if __name__ == "__main__":
         stats = get_statistics()
         print(f"\nStatistics: {stats}")
 
-        print("\n✅ Database tests passed!")
+        print("\n[PASS] Database tests passed!")

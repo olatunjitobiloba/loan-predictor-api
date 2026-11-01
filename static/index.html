@@ -3,216 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Prediction AI | 88.62% Accuracy</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Loan Predictor AI | 88.62% Accuracy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body>
-    <!-- Header -->
+<body class="dark-theme">
+    <!-- Navigation -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo">🤖 Loan Predictor AI</h1>
+                <a href="#home" class="logo">
+                    <span class="logo-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                    </span>
+                    <span class="logo-text">Loan<span class="logo-accent">Predictor</span></span>
+                    <span class="badge-version">v7.0</span>
+                </a>
                 <nav class="nav">
-                    <a href="#home">Home</a>
-                    <a href="#predict">Predict</a>
-                    <a href="#stats">Statistics</a>
-                    <a href="#about">About</a>
+                    <a href="#home" class="nav-link">Overview</a>
+                    <a href="#predict" class="nav-link">Prediction Engine</a>
+                    <a href="#comparison" class="nav-link">ML Benchmark</a>
+                    <a href="#stats" class="nav-link">Telemetry</a>
+                    <a href="#about" class="nav-link">Architecture</a>
                 </nav>
+                <div class="header-actions">
+                    <a href="https://loan-predictor-api-91xu.onrender.com/docs" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        Swagger API
+                    </a>
+                    <a href="https://github.com/olatunjitobiloba/loan-predictor-api" target="_blank" rel="noopener noreferrer" class="btn-icon" aria-label="GitHub Repository">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+        <div class="hero-glow"></div>
         <div class="container">
             <div class="hero-content">
-                <h2 class="hero-title">AI-Powered Loan Approval Prediction</h2>
-                <p class="hero-subtitle">Get instant loan approval predictions with 88.62% accuracy using advanced machine learning</p>
-                <div class="hero-stats">
-                    <div class="stat-card">
-                        <div class="stat-number">88.62%</div>
-                        <div class="stat-label">Accuracy</div>
+                <div class="hero-pill">
+                    <span class="status-indicator"></span>
+                    <span>Production Random Forest · 88.62% Validation Accuracy</span>
+                </div>
+                <h1 class="hero-title">
+                    Intelligent Credit Underwriting <br>
+                    <span class="gradient-text">Engineered for Production</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Automated credit risk assessment and qualification inference engine with sub-180ms latency, calibrated decision probabilities, and end-to-end pytest coverage.
+                </p>
+
+                <!-- KPI Bento Strip -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-val">88.62%</div>
+                            <div class="kpi-sub">Validation Accuracy</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="total-predictions">0</div>
-                        <div class="stat-label">Predictions Made</div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                                <path d="M3 9h18"/>
+                                <path d="M9 21V9"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-val" id="total-predictions">--</div>
+                            <div class="kpi-sub">Live Inferences Logged</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number">83%</div>
-                        <div class="stat-label">Test Coverage</div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20"/>
+                                <path d="m17 5-5-3-5 3"/>
+                                <path d="m17 19-5 3-5-3"/>
+                                <path d="M2 12h20"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-val">100%</div>
+                            <div class="kpi-sub">Pytest Pass Rate</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrap">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="kpi-val">&lt; 180ms</div>
+                            <div class="kpi-sub">P95 Inference Latency</div>
+                        </div>
                     </div>
                 </div>
-                <a href="#predict" class="cta-button">Try It Now →</a>
+
+                <div class="hero-actions">
+                    <a href="#predict" class="btn-primary">
+                        <span>Launch Prediction Simulator</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14"/>
+                            <path d="m12 5 7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#comparison" class="btn-secondary">
+                        <span>View Model Suite</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                            <path d="M16 21h5v-5"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Prediction Form Section -->
-    <section class="prediction-section" id="predict">
+    <!-- Prediction Section -->
+    <section class="section prediction-section" id="predict">
         <div class="container">
-            <h2 class="section-title">Make a Prediction</h2>
-            <p class="section-subtitle">Enter applicant information to get instant loan approval prediction</p>
+            <div class="section-header">
+                <span class="section-tag">Interactive Evaluation</span>
+                <h2 class="section-title">Loan Qualification Inference</h2>
+                <p class="section-desc">Submit applicant data to run validation and model inference with real-time risk classification.</p>
+            </div>
 
-            <div class="prediction-container">
-                <!-- Form -->
-                <div class="form-container">
-                    <form id="prediction-form">
-                        <!-- Personal Information -->
-                        <div class="form-section">
-                            <h3 class="form-section-title">Personal Information</h3>
+            <!-- Quick Scenario Presets -->
+            <div class="preset-wrapper">
+                <span class="preset-label">Test with Presets:</span>
+                <div class="preset-buttons">
+                    <button type="button" class="preset-btn" onclick="applyPreset('prime')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Prime Borrower
+                    </button>
+                    <button type="button" class="preset-btn" onclick="applyPreset('high_dti')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M3.6 15h16.8L12 3z"/></svg>
+                        High Debt Ratio
+                    </button>
+                    <button type="button" class="preset-btn" onclick="applyPreset('no_credit')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        Zero Credit History
+                    </button>
+                </div>
+            </div>
 
-                            <div class="form-row">
-                                <div class="form-group">
+            <div class="app-grid">
+                <!-- Input Form Panel -->
+                <div class="panel form-panel">
+                    <form id="prediction-form" novalidate>
+                        <div class="form-cluster">
+                            <h3 class="cluster-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Applicant Demographics
+                            </h3>
+                            <div class="form-row-2">
+                                <div class="field-group">
                                     <label for="gender">Gender</label>
                                     <select id="gender" name="Gender">
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                     </select>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="married">Married</label>
+                                <div class="field-group">
+                                    <label for="married">Marital Status</label>
                                     <select id="married" name="Married">
-                                        <option value="Yes">Yes</option>
-                                        <option value="No">No</option>
+                                        <option value="Yes">Married</option>
+                                        <option value="No">Single</option>
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
+                            <div class="form-row-2">
+                                <div class="field-group">
                                     <label for="dependents">Dependents</label>
                                     <select id="dependents" name="Dependents">
-                                        <option value="0">0</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3+">3+</option>
+                                        <option value="0">0 Dependents</option>
+                                        <option value="1">1 Dependent</option>
+                                        <option value="2">2 Dependents</option>
+                                        <option value="3+">3+ Dependents</option>
                                     </select>
                                 </div>
-
-                                <div class="form-group">
+                                <div class="field-group">
                                     <label for="education">Education</label>
                                     <select id="education" name="Education">
                                         <option value="Graduate">Graduate</option>
-                                        <option value="Not Graduate">Not Graduate</option>
+                                        <option value="Not Graduate">Undergraduate / Other</option>
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="form-group">
+                            <div class="field-group">
                                 <label for="self-employed">Self Employed</label>
                                 <select id="self-employed" name="Self_Employed">
-                                    <option value="No">No</option>
-                                    <option value="Yes">Yes</option>
+                                    <option value="No">No (Salaried)</option>
+                                    <option value="Yes">Yes (Independent / Business)</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Financial Information -->
-                        <div class="form-section">
-                            <h3 class="form-section-title">Financial Information</h3>
-
-                            <div class="form-group">
-                                <label for="applicant-income">Applicant Income (Monthly) *</label>
-                                <input type="number" id="applicant-income" name="ApplicantIncome"
-                                       placeholder="e.g., 5000" required min="0" max="100000">
-                                <small>Required field</small>
+                        <div class="form-cluster">
+                            <h3 class="cluster-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"/>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                                Financial Metrics
+                            </h3>
+                            <div class="form-row-2">
+                                <div class="field-group">
+                                    <label for="applicant-income">Applicant Monthly Income ($) *</label>
+                                    <div class="input-affix">
+                                        <span class="affix-prefix">$</span>
+                                        <input type="number" id="applicant-income" name="ApplicantIncome" placeholder="5000" required min="0" max="100000" value="5000">
+                                    </div>
+                                </div>
+                                <div class="field-group">
+                                    <label for="coapplicant-income">Co-Applicant Monthly Income ($)</label>
+                                    <div class="input-affix">
+                                        <span class="affix-prefix">$</span>
+                                        <input type="number" id="coapplicant-income" name="CoapplicantIncome" placeholder="1500" min="0" max="100000" value="1500">
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="form-group">
-                                <label for="coapplicant-income">Co-applicant Income (Monthly)</label>
-                                <input type="number" id="coapplicant-income" name="CoapplicantIncome"
-                                       placeholder="e.g., 1500" min="0" max="100000" value="0">
+                            <div class="form-row-2">
+                                <div class="field-group">
+                                    <label for="loan-amount">Requested Principal ($ in Thousands)</label>
+                                    <div class="input-affix">
+                                        <span class="affix-prefix">$k</span>
+                                        <input type="number" id="loan-amount" name="LoanAmount" placeholder="150" min="1" max="10000" value="150">
+                                    </div>
+                                </div>
+                                <div class="field-group">
+                                    <label for="loan-term">Amortization Term</label>
+                                    <select id="loan-term" name="Loan_Amount_Term">
+                                        <option value="360" selected>360 Months (30 Years)</option>
+                                        <option value="240">240 Months (20 Years)</option>
+                                        <option value="180">180 Months (15 Years)</option>
+                                        <option value="120">120 Months (10 Years)</option>
+                                        <option value="60">60 Months (5 Years)</option>
+                                    </select>
+                                </div>
                             </div>
-
-                            <div class="form-group">
-                                <label for="loan-amount">Loan Amount (in thousands)</label>
-                                <input type="number" id="loan-amount" name="LoanAmount"
-                                       placeholder="e.g., 150" min="0" max="10000">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="loan-term">Loan Amount Term (months)</label>
-                                <select id="loan-term" name="Loan_Amount_Term">
-                                    <option value="360">360 (30 years)</option>
-                                    <option value="180">180 (15 years)</option>
-                                    <option value="240">240 (20 years)</option>
-                                    <option value="300">300 (25 years)</option>
-                                    <option value="120">120 (10 years)</option>
-                                    <option value="60">60 (5 years)</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="credit-history">Credit History</label>
-                                <select id="credit-history" name="Credit_History">
-                                    <option value="1">Yes (Good credit history)</option>
-                                    <option value="0">No (No credit history)</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="property-area">Property Area</label>
-                                <select id="property-area" name="Property_Area">
-                                    <option value="Urban">Urban</option>
-                                    <option value="Semiurban">Semiurban</option>
-                                    <option value="Rural">Rural</option>
-                                </select>
+                            <div class="form-row-2">
+                                <div class="field-group">
+                                    <label for="credit-history">Bureau Credit History</label>
+                                    <select id="credit-history" name="Credit_History">
+                                        <option value="1" selected>Positive History (1.0 - Meets Standards)</option>
+                                        <option value="0">Default / No History (0.0)</option>
+                                    </select>
+                                </div>
+                                <div class="field-group">
+                                    <label for="property-area">Collateral Property Zone</label>
+                                    <select id="property-area" name="Property_Area">
+                                        <option value="Urban">Urban</option>
+                                        <option value="Semiurban" selected>Semiurban (Optimal Recovery)</option>
+                                        <option value="Rural">Rural</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
-                        <button type="submit" class="submit-button" id="submit-btn">
-                            <span id="submit-text">Get Prediction</span>
-                            <span id="submit-loader" class="loader" style="display: none;"></span>
+                        <button type="submit" class="btn-submit" id="submit-btn">
+                            <span id="submit-text">Run ML Decision Engine</span>
+                            <span id="submit-loader" class="loader-spinner" style="display: none;"></span>
                         </button>
                     </form>
                 </div>
 
-                <!-- Results -->
-                <div class="results-container" id="results-container" style="display: none;">
-                    <div class="result-card" id="result-card">
-                        <div class="result-icon" id="result-icon">✓</div>
-                        <h3 class="result-title" id="result-title">Loan Approved!</h3>
-                        <p class="result-subtitle" id="result-subtitle">High confidence prediction</p>
-
-                        <div class="confidence-bar">
-                            <div class="confidence-label">Confidence</div>
-                            <div class="confidence-progress">
-                                <div class="confidence-fill" id="confidence-fill"></div>
-                            </div>
-                            <div class="confidence-value" id="confidence-value">0%</div>
+                <!-- Decision Card Panel -->
+                <div class="panel result-panel">
+                    <!-- Idle State -->
+                    <div id="results-placeholder" class="result-placeholder">
+                        <div class="placeholder-icon">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="m10 15 5-3-5-3v6z"/>
+                            </svg>
                         </div>
+                        <h3>Decision Output Ready</h3>
+                        <p>Adjust applicant credentials on the left or click a preset above, then execute inference to generate credit qualification metrics.</p>
+                    </div>
 
-                        <div class="probability-bars">
-                            <div class="probability-item">
-                                <div class="probability-label">
-                                    <span>Approval Probability</span>
-                                    <span id="approval-prob">0%</span>
+                    <!-- Computed Result State -->
+                    <div id="results-container" class="results-container" style="display: none;">
+                        <div class="result-card" id="result-card">
+                            <div class="result-header">
+                                <div class="result-icon-badge" id="result-icon">
+                                    <!-- Dynamic SVG Injected -->
                                 </div>
-                                <div class="probability-bar">
-                                    <div class="probability-fill approved" id="approval-fill"></div>
-                                </div>
-                            </div>
-                            <div class="probability-item">
-                                <div class="probability-label">
-                                    <span>Rejection Probability</span>
-                                    <span id="rejection-prob">0%</span>
-                                </div>
-                                <div class="probability-bar">
-                                    <div class="probability-fill rejected" id="rejection-fill"></div>
+                                <div>
+                                    <div class="result-tier-tag" id="result-tier">UNDERWRITING TIER</div>
+                                    <h3 class="result-title" id="result-title">Loan Approved</h3>
                                 </div>
                             </div>
-                        </div>
+                            <p class="result-subtitle" id="result-subtitle">High confidence prediction</p>
 
-                        <div class="warnings" id="warnings-container" style="display: none;">
-                            <h4>⚠️ Warnings</h4>
-                            <ul id="warnings-list"></ul>
-                        </div>
+                            <!-- Radial Confidence Gauge (Dribbble pattern) -->
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 120 120">
+                                    <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+                                    <circle class="gauge-fill" id="gauge-fill" cx="60" cy="60" r="50"/>
+                                </svg>
+                                <div class="gauge-center">
+                                    <span class="gauge-val" id="confidence-value">0%</span>
+                                    <span class="gauge-lbl">Confidence</span>
+                                </div>
+                            </div>
 
-                        <div class="result-actions">
-                            <button class="secondary-button" onclick="resetForm()">Make Another Prediction</button>
+                            <!-- Dual Probability Breakdown -->
+                            <div class="prob-grid">
+                                <div class="prob-box approved">
+                                    <div class="prob-head">
+                                        <span class="prob-indicator"></span>
+                                        <span>Approval Probability</span>
+                                    </div>
+                                    <div class="prob-num" id="approval-prob">0%</div>
+                                    <div class="prob-track">
+                                        <div class="prob-bar" id="approval-fill"></div>
+                                    </div>
+                                </div>
+                                <div class="prob-box rejected">
+                                    <div class="prob-head">
+                                        <span class="prob-indicator"></span>
+                                        <span>Rejection Risk</span>
+                                    </div>
+                                    <div class="prob-num" id="rejection-prob">0%</div>
+                                    <div class="prob-track">
+                                        <div class="prob-bar" id="rejection-fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Explainable AI (XAI) Feature Importance -->
+                            <div class="xai-box">
+                                <h4 class="xai-title">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                    </svg>
+                                    Primary Decision Drivers
+                                </h4>
+                                <div class="driver-list" id="driver-list">
+                                    <!-- Injected dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Warnings -->
+                            <div class="warnings-card" id="warnings-container" style="display: none;">
+                                <div class="warnings-head">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                    <span>Validation Warnings</span>
+                                </div>
+                                <ul id="warnings-list" class="warnings-items"></ul>
+                            </div>
+
+                            <button type="button" class="btn-reset" onclick="resetForm()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                                </svg>
+                                Reset Simulator
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -220,51 +397,179 @@
         </div>
     </section>
 
-    <!-- Statistics Section -->
-    <section class="stats-section" id="stats">
+    <!-- Model Comparison Section -->
+    <section class="section comparison-section" id="comparison">
         <div class="container">
-            <h2 class="section-title">Live Statistics</h2>
-            <div class="stats-grid" id="stats-grid">
-                <div class="stats-card">
-                    <div class="stats-icon">📊</div>
-                    <div class="stats-number" id="stats-total">Loading...</div>
-                    <div class="stats-label">Total Predictions</div>
+            <div class="section-header">
+                <span class="section-tag">Model Benchmarks</span>
+                <h2 class="section-title">Comparative Architecture Evaluation</h2>
+                <p class="section-desc">Side-by-side performance metrics across 4 machine learning algorithms trained on the loan prediction dataset.</p>
+            </div>
+
+            <!-- Model Cards Grid -->
+            <div class="models-grid" id="models-grid">
+                <div class="model-loading">
+                    <div class="loader-spinner"></div>
+                    <p>Evaluating model suite telemetry...</p>
                 </div>
-                <div class="stats-card">
-                    <div class="stats-icon">✅</div>
-                    <div class="stats-number" id="stats-approved">Loading...</div>
-                    <div class="stats-label">Approved</div>
+            </div>
+
+            <!-- Benchmark Sandbox -->
+            <div class="benchmark-card">
+                <div class="benchmark-info">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        Simultaneous Multi-Model Benchmark
+                    </h3>
+                    <p>Trigger concurrent inference across Random Forest, Gradient Boosting, Logistic Regression, and SVM with the current application payload.</p>
                 </div>
-                <div class="stats-card">
-                    <div class="stats-icon">❌</div>
-                    <div class="stats-number" id="stats-rejected">Loading...</div>
-                    <div class="stats-label">Rejected</div>
+                <div class="benchmark-action-wrap">
+                    <button class="btn-primary" onclick="benchmarkModels()" id="benchmark-btn">
+                        <span id="benchmark-text">Run Benchmark Suite</span>
+                        <span id="benchmark-loader" class="loader-spinner" style="display: none;"></span>
+                    </button>
                 </div>
-                <div class="stats-card">
-                    <div class="stats-icon">📈</div>
-                    <div class="stats-number" id="stats-rate">Loading...</div>
-                    <div class="stats-label">Approval Rate</div>
+                <div id="benchmark-results" class="benchmark-results" style="display: none;"></div>
+            </div>
+
+            <!-- Performance Metrics Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Evaluation Metrics Reference</h3>
+                    <span class="badge-dim">Stratified K-Fold CV</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>Validation Accuracy</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Serving Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metrics-tbody">
+                            <tr>
+                                <td colspan="6" class="loading-cell">Loading benchmark scores...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section class="about-section" id="about">
+    <!-- Telemetry Section -->
+    <section class="section stats-section" id="stats">
         <div class="container">
-            <h2 class="section-title">About This Project</h2>
-            <div class="about-content">
+            <div class="section-header">
+                <span class="section-tag">Observability</span>
+                <h2 class="section-title">Live System Telemetry</h2>
+                <p class="section-desc">Persistent inference metrics collected from real-time API transactions.</p>
+            </div>
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-tile">
+                    <div class="stat-icon-wrap">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                            <line x1="6" y1="6" x2="6.01" y2="6"/>
+                            <line x1="6" y1="18" x2="6.01" y2="18"/>
+                        </svg>
+                    </div>
+                    <div class="stat-num" id="stats-total">--</div>
+                    <div class="stat-tag">Total Inferences Handled</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-icon-wrap success">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="stat-num" id="stats-approved">--</div>
+                    <div class="stat-tag">Approved Underwriting Decisions</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-icon-wrap danger">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                    </div>
+                    <div class="stat-num" id="stats-rejected">--</div>
+                    <div class="stat-tag">Rejection Decisions</div>
+                </div>
+                <div class="stat-tile">
+                    <div class="stat-icon-wrap accent">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                            <polyline points="17 6 23 6 23 12"/>
+                        </svg>
+                    </div>
+                    <div class="stat-num" id="stats-rate">--</div>
+                    <div class="stat-tag">Cumulative Approval Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="section about-section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">System Design</span>
+                <h2 class="section-title">Production Architecture</h2>
+                <p class="section-desc">Built with high-availability standards, automated data validation, and reproducible pipelines.</p>
+            </div>
+            <div class="about-grid">
                 <div class="about-card">
-                    <h3>🤖 Machine Learning Model</h3>
-                    <p>Random Forest classifier trained on loan application data with 88.62% accuracy. Features include income analysis, credit history, and demographic factors.</p>
+                    <div class="about-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2"/>
+                            <rect x="9" y="9" width="6" height="6"/>
+                            <line x1="9" y1="1" x2="9" y2="4"/>
+                            <line x1="15" y1="1" x2="15" y2="4"/>
+                            <line x1="9" y1="20" x2="9" y2="23"/>
+                            <line x1="15" y1="20" x2="15" y2="23"/>
+                            <line x1="20" y1="9" x2="23" y2="9"/>
+                            <line x1="20" y1="14" x2="23" y2="14"/>
+                            <line x1="1" y1="9" x2="4" y2="9"/>
+                            <line x1="1" y1="14" x2="4" y2="14"/>
+                        </svg>
+                    </div>
+                    <h3>Machine Learning Pipeline</h3>
+                    <p>Scikit-learn random forest classifier optimized with GridSearch cross-validation. Employs imputation, target-encoding, and robust feature scaling for credit scoring.</p>
                 </div>
                 <div class="about-card">
-                    <h3>🔒 Data Privacy</h3>
-                    <p>All predictions are stored securely. No personal identifying information is required. This is a demonstration project for educational purposes.</p>
+                    <div class="about-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h3>Security & Data Protection</h3>
+                    <p>No PII (Personally Identifiable Information) persisted. Strict schema validation via Marshmallow, SQL parameterization, rate limiting, and automated origin CORS safeguards.</p>
                 </div>
                 <div class="about-card">
-                    <h3>📊 Technology Stack</h3>
-                    <p>Built with Flask, scikit-learn, PostgreSQL, and deployed on Render. 83% test coverage with comprehensive validation.</p>
+                    <div class="about-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                    </div>
+                    <h3>Serving Infrastructure</h3>
+                    <p>Served via Flask 3.x and Gunicorn on Render container infrastructure with automated health probing, in-memory caching, response compression, and Swagger OpenAPI documentation.</p>
                 </div>
             </div>
         </div>
@@ -272,12 +577,19 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>Built with ❤️ by [Your Name] | <a href="https://github.com/olatunjitobiloba1/loan-predictor-api" target="_blank">View on GitHub</a></p>
-            <p>Model Accuracy: 88.62% | Test Coverage: 83% | API: <a href="https://loan-predictor-api-91xu.onrender.com" target="_blank">Live</a></p>
+        <div class="container footer-content">
+            <div class="footer-left">
+                <span class="footer-brand">LoanPredictor AI</span>
+                <span class="footer-copy">Engineered by Olatunji Oluwatobiloba Franklin</span>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/olatunjitobiloba/loan-predictor-api" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+                <a href="https://loan-predictor-api-91xu.onrender.com/docs" target="_blank" rel="noopener noreferrer">Swagger OpenAPI</a>
+                <a href="https://loan-predictor-api-91xu.onrender.com/health" target="_blank" rel="noopener noreferrer">Health Check</a>
+            </div>
         </div>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -2258,7 +2258,7 @@ def load_model(default_model_name="random_forest"):
 # Load model on startup
 with app.app_context():
     if not load_model():
-        logger.warning("⚠️  [WARNING] Model failed to load")
+        logger.warning("[WARNING] Model failed to load")
 
 if __name__ == "__main__":
     # Get port from environment variable (Render provides this)

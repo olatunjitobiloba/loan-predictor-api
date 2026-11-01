@@ -21,13 +21,13 @@ def test_production_api():
     try:
         response = requests.get(f"{PRODUCTION_URL}/health", timeout=10)
         if response.status_code == 200:
-            print("   ✅ Health check passed")
+            print("   [PASS] Health check passed")
             print(f"   Response: {response.json()}")
         else:
-            print(f"   ❌ Health check failed: {response.status_code}")
+            print(f"   [FAIL] Health check failed: {response.status_code}")
             return False
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
         return False
 
     # Test 2: API info
@@ -36,13 +36,13 @@ def test_production_api():
         response = requests.get(f"{PRODUCTION_URL}/api", timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print("   ✅ API info retrieved")
+            print("   [PASS] API info retrieved")
             print(f"   Version: {data.get('version')}")
             print(f"   Model accuracy: {data.get('model_accuracy')}")
         else:
-            print(f"   ❌ Failed: {response.status_code}")
+            print(f"   [FAIL] Failed: {response.status_code}")
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
 
     # Test 3: Model info
     print("\n3. Testing model info endpoint...")
@@ -50,13 +50,13 @@ def test_production_api():
         response = requests.get(f"{PRODUCTION_URL}/model-info", timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print("   ✅ Model info retrieved")
+            print("   [PASS] Model info retrieved")
             print(f"   Accuracy: {data.get('accuracy')}")
             print(f"   Features: {data.get('feature_count')}")
         else:
-            print(f"   ❌ Failed: {response.status_code}")
+            print(f"   [FAIL] Failed: {response.status_code}")
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
 
     # Test 4: Make prediction
     print("\n4. Testing prediction endpoint...")
@@ -84,15 +84,15 @@ def test_production_api():
 
         if response.status_code == 200:
             data = response.json()
-            print("   ✅ Prediction successful")
+            print("   [PASS] Prediction successful")
             print(f"   Result: {data.get('prediction')}")
             print(f"   Confidence: {data.get('confidence'):.2%}")
             print(f"   Prediction ID: {data.get('prediction_id')}")
         else:
-            print(f"   ❌ Prediction failed: {response.status_code}")
+            print(f"   [FAIL] Prediction failed: {response.status_code}")
             print(f"   Response: {response.json()}")
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
 
     # Test 5: Validation (should fail)
     print("\n5. Testing validation (negative test)...")
@@ -107,12 +107,12 @@ def test_production_api():
         )
 
         if response.status_code == 400:
-            print("   ✅ Validation correctly rejected invalid data")
+            print("   [PASS] Validation correctly rejected invalid data")
             print(f"   Error: {response.json().get('validation_errors')}")
         else:
-            print("   ❌ Validation failed to catch error")
+            print("   [FAIL] Validation failed to catch error")
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
 
     # Test 6: Statistics
     print("\n6. Testing statistics endpoint...")
@@ -120,13 +120,13 @@ def test_production_api():
         response = requests.get(f"{PRODUCTION_URL}/statistics", timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print("   ✅ Statistics retrieved")
+            print("   [PASS] Statistics retrieved")
             print(f"   Total predictions: {data.get('total_predictions')}")
             print(f"   Approval rate: {data.get('approval_rate')}")
         else:
-            print(f"   ❌ Failed: {response.status_code}")
+            print(f"   [FAIL] Failed: {response.status_code}")
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
 
     # Test 7: History
     print("\n7. Testing history endpoint...")
@@ -134,17 +134,17 @@ def test_production_api():
         response = requests.get(f"{PRODUCTION_URL}/history?limit=5", timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print("   ✅ History retrieved")
+            print("   [PASS] History retrieved")
             print(f"   Count: {data.get('count')}")
         else:
-            print(f"   ❌ Failed: {response.status_code}")
+            print(f"   [FAIL] Failed: {response.status_code}")
     except Exception as e:
-        print(f"   ❌ Error: {str(e)}")
+        print(f"   [FAIL] Error: {str(e)}")
 
     print("\n" + "=" * 70)
-    print("✅ PRODUCTION API TEST COMPLETE")
+    print("[PASS] PRODUCTION API TEST COMPLETE")
     print("=" * 70)
-    print(f"\n🎉 Your API is LIVE at: {PRODUCTION_URL}")
+    print(f"\n[LIVE] Your API is LIVE at: {PRODUCTION_URL}")
     print("\nShare this URL to demonstrate your project!")
 
     return True

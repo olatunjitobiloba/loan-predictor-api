@@ -282,9 +282,9 @@ I wrote a comprehensive 3,000-word article covering:
 
 Published on Medium | Dev.to
 
-[![Demo Video](https://img.shields.io/badge/▶️-Watch%20Demo-red?style=for-the-badge&logo=youtube)](YOUR_YOUTUBE_LINK)
-[![Live Demo](https://img.shields.io/badge/🌐-Live%20Demo-blue?style=for-the-badge)](https://loan-predictor-api-91xu.onrender.com/app)
-[![API Docs](https://img.shields.io/badge/📚-API%20Docs-green?style=for-the-badge)](https://loan-predictor-api-91xu.onrender.com/docs)
+[![Demo Video](https://img.shields.io/badge/Watch%20Demo-YouTube-red?style=for-the-badge&logo=youtube)](YOUR_YOUTUBE_LINK)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-blue?style=for-the-badge)](https://loan-predictor-api-91xu.onrender.com/app)
+[![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-059669?style=for-the-badge)](https://loan-predictor-api-91xu.onrender.com/docs)
 
 > Production-ready AI loan prediction system with 88.62% accuracy, 4 ML models, and comprehensive API
 

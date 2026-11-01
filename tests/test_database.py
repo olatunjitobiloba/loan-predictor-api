@@ -45,7 +45,7 @@ def test_make_predictions_and_populate_database():
         result = response.json()
         pred_id = result.get("prediction_id")
         _prediction_ids.append(pred_id)
-        print(f" ✅ Stored with ID: {pred_id}")
+        print(f" [PASS] Stored with ID: {pred_id}")
         print(f"  Result: {result['prediction']}({result['confidence']:.2%})")
         time.sleep(0.5)
 
@@ -64,7 +64,7 @@ def test_fetch_recent_history():
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
     history = response.json()
-    print(f"✅ Found {history['count']} predictions")
+    print(f"[PASS] Found {history['count']} predictions")
     for pred in history["predictions"]:
         print(f"\n ID: {pred['id']}")
         print(f" Time: {pred['timestamp']}")
@@ -86,7 +86,7 @@ def test_fetch_specific_prediction():
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
     pred = response.json()
-    print("✅ Prediction details:")
+    print("[PASS] Prediction details:")
     print(json.dumps(pred, indent=2))
 
 
@@ -100,7 +100,7 @@ def test_fetch_statistics():
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
     stats = response.json()
-    print("✅ Statistics:")
+    print("[PASS] Statistics:")
     print(f" Total Predictions: {stats['total_predictions']}")
     print(f" Approved: {stats['approved']}")
     print(f" Rejected: {stats['rejected']}")
@@ -118,7 +118,7 @@ def test_fetch_analytics():
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
     analytics = response.json()
-    print("✅ Analytics:")
+    print("[PASS] Analytics:")
     print(json.dumps(analytics, indent=2))
 
 
@@ -132,7 +132,7 @@ def test_check_api_endpoint():
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
     api_info = response.json()
-    print("✅ API Info:")
+    print("[PASS] API Info:")
     print(f" Status: {api_info['status']}")
     print(f" Version: {api_info['version']}")
     print(f" Model Accuracy: {api_info['model_accuracy']}")

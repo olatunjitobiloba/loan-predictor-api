@@ -20,7 +20,7 @@ def validation_case(name, data, expected_status=200):
     assert (
         response.status_code == expected_status
     ), f"Expected {expected_status}, got {response.status_code}: {response.json()}"
-    print("✅ PASS")
+    print("[PASS] PASS")
 
     return response
 
